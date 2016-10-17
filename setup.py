@@ -15,7 +15,7 @@ if version_info[0] < 3 or version_info[1] < 4:
 # If we're at version 3.4, backfill the typing library
 elif version_info[1] == 4:
     DEPENDS.append("typing")
-    
+
 
 setup(
     name='snowflake_ingest',
