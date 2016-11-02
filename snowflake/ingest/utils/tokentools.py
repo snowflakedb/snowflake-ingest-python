@@ -5,8 +5,11 @@ JWT tokens for authenticating to Snowflake
 
 from typing import Text
 from datetime import timedelta, datetime
+from logging import getLogger
 
 import jwt
+
+logger = getLogger(__name__)
 
 ISSUER = "iss"
 EXPIRE_TIME = "exp"
@@ -31,6 +34,12 @@ class SecurityManager(object):
         :param lifetime: how long this key will live (in minutes)
         :param renewal_delay: how long until the security manager should renew the key
         """
+
+        logger.info(
+            """Creating Security Manager with arguments
+            account : %s, user : %s, lifetime : %s, renewal_delay : %s""",
+            account, user, lifetime, renewal_delay)
+
         self.account = account.upper()  # Snowflake account names are canonically in all caps
         self.user = user.upper()  # Snowflake user names are also in all caps by default
         self.qualified_username = self.account + "." + self.user  # Generate the full user name
@@ -50,6 +59,8 @@ class SecurityManager(object):
 
         # If the token has expired, or doesn't exist, regenerate it
         if self.token is None or self.renew_time <= now:
+            logger.info("Renewing token because renewal time (%s) is eclipsed by present time (%s)",
+                        self.renew_time, now)
             # Calculate the next time we need to renew the token
             self.renew_time = now + self.renewal_delay
 
@@ -68,5 +79,6 @@ class SecurityManager(object):
 
             # Regenerate the actual token
             self.token = jwt.encode(payload, self.private_key, algorithm=SecurityManager.ALGORITHM)
+            logger.info("New Token is %s", self.token)
 
         return self.token

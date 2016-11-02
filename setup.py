@@ -6,7 +6,7 @@ from setuptools import setup
 # We need to know the version to backfill some dependencies
 from sys import version_info, exit
 # Define our list of installation dependencies
-DEPENDS = ["pyjwt"]
+DEPENDS = ["pyjwt", "requests", "furl"]
 
 # If we're at version less than 3.4 - fail
 if version_info[0] < 3 or version_info[1] < 4:
