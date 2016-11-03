@@ -27,7 +27,6 @@ STAGE_PARAMETER = "stage"
 
 
 # Method to generate an the URL for an ingest request for a given table, and stage
-
 class URLGenerator(object):
     """
     URLGenerator - this class handles creating the URLs for a requests to
