@@ -12,8 +12,10 @@ from .utils import URLGenerator
 # We use a named tuple to represent remote files
 from collections import namedtuple
 
+# Typing information
 from typing import Text, Dict, Any
 
+# UUID for typing formation
 from uuid import UUID
 
 import requests
@@ -33,6 +35,7 @@ class SimpleIngestManager(object):
     Service rest api. It is *synchronous* and as such we will block until we either totally fail to
     get a response *or* we successfully hear back from the
     """
+
     def __init__(self, account: Text, user: Text, table: Text, stage: Text, private_key: Text):
         """
         Simply instantiates all of our local state
@@ -42,7 +45,7 @@ class SimpleIngestManager(object):
         :param stage: the name of the stage from which data is coming
         :param private_key: the private key we use for token signature
         """
-        self.sec_manager = SecurityManager(account, user, private_key) # Create the token generator
+        self.sec_manager = SecurityManager(account, user, private_key)  # Create the token generator
         self.url_engine = URLGenerator()
         self.table = table
         self.stage = stage
@@ -56,7 +59,7 @@ class SimpleIngestManager(object):
         token_bearer = BEARER_FORMAT.format(self.sec_manager.get_token())
         return {AUTH_HEADER: token_bearer}
 
-    def ingest_files(self, staged_files: [StagedFile], request_id: UUID = None) -> (int, None | Dict[Text, Any]):
+    def ingest_files(self, staged_files: [StagedFile], request_id: UUID = None) -> Dict[Text, Any]:
         """
         ingest_files - figures out the
         :param staged_files: a list of files we want to ingest
@@ -68,20 +71,19 @@ class SimpleIngestManager(object):
 
         # Make our message payload
         payload = {
-            "files": [ x._asdict() for x in staged_files]
+            "files": [x._asdict() for x in staged_files]
         }
 
         # Send our request!
         response = requests.post(target_url, json=payload, headers=self._get_auth_header())
 
-        # Now, if we have a response that is not 200, just return that as the first part of a tuple
-        if response.status_code != OK:
-            return response.status_code, None
+        # Now, if we have a response that is not 200, raise an error
+        response.raise_for_status()
 
         # Otherwise, just unpack the message and return that
-        return response.status_code, response.json()
+        return response.json()
 
-    def get_history(self, request_id: UUID = None):
+    def get_history(self, request_id: UUID = None) -> Dict[Text, Any]:
         """
         get_history - returns the currently cached ingest history from the service
         :param request_id: an optional request UUID to label this
@@ -93,9 +95,8 @@ class SimpleIngestManager(object):
         # Send out our request!
         response = requests.get(target_url, headers=self._get_auth_header())
 
-        # If we don't have a valid response, just send the status to the user
-        if response.status_code != OK:
-            return response.status_code, None
+        # If we don't have a valid response, just raise an error
+        response.raise_for_status()
 
         # Otherwise just unpack the message and return that with the status
-        return response.status_code, response.json()
+        return response.json()
