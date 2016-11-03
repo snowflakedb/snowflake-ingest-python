@@ -1,0 +1,101 @@
+"""
+simple_ingest_manager - Creates a basic ingest manager that synchronously sends
+requests to the Snowflake Ingest service
+"""
+
+# This class will manage our tokens
+from .utils import SecurityManager
+
+# This will manage our URL generation
+from .utils import URLGenerator
+
+# We use a named tuple to represent remote files
+from collections import namedtuple
+
+from typing import Text, Dict, Any
+
+from uuid import UUID
+
+import requests
+
+# We just need a simple named tuple to represent remote files
+StagedFile = namedtuple("StagedFile", ["path", "size"])
+
+AUTH_HEADER = "Authorization"  # Authorization header name
+BEARER_FORMAT = "BEARER {0}"  # The format of this bearer
+
+OK = 200  # Is this Reponse OK?
+
+
+class SimpleIngestManager(object):
+    """
+    SimpleIngestManager - this class is a simple wrapper around the Snowflake Ingest
+    Service rest api. It is *synchronous* and as such we will block until we either totally fail to
+    get a response *or* we successfully hear back from the
+    """
+    def __init__(self, account: Text, user: Text, table: Text, stage: Text, private_key: Text):
+        """
+        Simply instantiates all of our local state
+        :param account: the name of the account who is loading
+        :param user: the name of the user who is loading
+        :param table: the name of the table into which data is going
+        :param stage: the name of the stage from which data is coming
+        :param private_key: the private key we use for token signature
+        """
+        self.sec_manager = SecurityManager(account, user, private_key) # Create the token generator
+        self.url_engine = URLGenerator()
+        self.table = table
+        self.stage = stage
+
+    def _get_auth_header(self) -> Dict[Text, Text]:
+        """
+        _get_auth_header - simply method to generate the bearer header for our http requests
+        :return: A singleton mapping from bearer to token
+        """
+
+        token_bearer = BEARER_FORMAT.format(self.sec_manager.get_token())
+        return {AUTH_HEADER: token_bearer}
+
+    def ingest_files(self, staged_files: [StagedFile], request_id: UUID = None) -> (int, None | Dict[Text, Any]):
+        """
+        ingest_files - figures out the
+        :param staged_files: a list of files we want to ingest
+        :param request_id: an optional request uuid to label this request
+        :return: the deserialized response from the service
+        """
+        # Generate the target url
+        target_url = self.url_engine.make_ingest_url(self.table, self.stage, request_id)
+
+        # Make our message payload
+        payload = {
+            "files": [ x._asdict() for x in staged_files]
+        }
+
+        # Send our request!
+        response = requests.post(target_url, json=payload, headers=self._get_auth_header())
+
+        # Now, if we have a response that is not 200, just return that as the first part of a tuple
+        if response.status_code != OK:
+            return response.status_code, None
+
+        # Otherwise, just unpack the message and return that
+        return response.status_code, response.json()
+
+    def get_history(self, request_id: UUID = None):
+        """
+        get_history - returns the currently cached ingest history from the service
+        :param request_id: an optional request UUID to label this
+        :return: the deserialized response from the service
+        """
+        # generate our history endpoint url
+        target_url = self.url_engine.make_history_url(self.table, request_id)
+
+        # Send out our request!
+        response = requests.get(target_url, headers=self._get_auth_header())
+
+        # If we don't have a valid response, just send the status to the user
+        if response.status_code != OK:
+            return response.status_code, None
+
+        # Otherwise just unpack the message and return that with the status
+        return response.status_code, response.json()
