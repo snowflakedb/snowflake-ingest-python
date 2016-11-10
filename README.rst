@@ -24,11 +24,12 @@ RSA key pair and, registering the public key with Snowflake. For detailed instru
 please visit the relevant `Snowflake Documentation Page <docs.snowflake.net>`_.
 
 
-Furl, PyJWT, Requests
----------------------
+Furl, PyJWT, Requests, and Cryptography
+---------------------------------------
 
 Internally, the Snowflake Ingest SDK makes use of `Furl <https://github.com/gruns/furl>`_, 
 `PyJWT <https://github.com/jpadilla/pyjwt>`_, and `Requests <http://docs.python-requests.org/en/master/>`_.
+In addition, the `cryptography <https://cryptography.io/en/latest/>` is used with PyJWT to sign JWT tokens.
 
 
 Installation
