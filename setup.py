@@ -27,7 +27,7 @@ def test_suite():
 
 setup(
     name='snowflake_ingest',
-    version='0.0.1',
+    version='0.1.0',
     description='Official SnowflakeDB File Ingest SDK',
     author='Snowflake Computing',
     author_email='support@snowflake.net',
