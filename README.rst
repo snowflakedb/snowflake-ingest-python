@@ -32,7 +32,7 @@ Internally, the Snowflake Ingest SDK makes use of `Furl <https://github.com/grun
 
 
 Installation
-============
+============ 
 If you would like to use this sdk, you can install it using python setuptools.
 
 .. code-block:: bash

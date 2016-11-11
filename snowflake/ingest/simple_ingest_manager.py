@@ -26,7 +26,7 @@ StagedFile = namedtuple("StagedFile", ["path", "size"])
 AUTH_HEADER = "Authorization"  # Authorization header name
 BEARER_FORMAT = "BEARER {0}"  # The format of this bearer
 
-OK = 200  # Is this Reponse OK?
+OK = 200  # Is this Response OK?
 
 
 class SimpleIngestManager(object):
