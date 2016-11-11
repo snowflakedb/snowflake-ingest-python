@@ -3,10 +3,12 @@
 # We need this to define our package
 from setuptools import setup
 
+# We use this to find and deploy our unittests
+import unittest
 # We need to know the version to backfill some dependencies
 from sys import version_info, exit
 # Define our list of installation dependencies
-DEPENDS = ["pyjwt", "requests", "furl"]
+DEPENDS = ["pyjwt", "requests", "furl", "cryptography"]
 
 # If we're at version less than 3.4 - fail
 if version_info[0] < 3 or version_info[1] < 4:
@@ -16,6 +18,12 @@ if version_info[0] < 3 or version_info[1] < 4:
 elif version_info[1] == 4:
     DEPENDS.append("typing")
 
+def test_suite():
+    """
+    Defines the test suite for the snowflake ingest SDK
+    """
+    loader = unittest.TestLoader()
+    return loader.discover("tests", pattern="test_*.py")
 
 setup(
     name='snowflake_ingest',
@@ -36,4 +44,6 @@ setup(
     ],
     # Now we describe the dependencies
     install_requires=DEPENDS,
+    # At last we set the test suite
+    test_suite="setup.test_suite"
 )
