@@ -8,6 +8,9 @@ from .utils import SecurityManager
 
 # This will manage our URL generation
 from .utils import URLGenerator
+from .utils.uris import DEFAULT_HOST
+from .utils.uris import DEFAULT_PORT
+from .utils.uris import DEFAULT_SCHEME
 
 # We use a named tuple to represent remote files
 from collections import namedtuple
@@ -36,7 +39,8 @@ class SimpleIngestManager(object):
     get a response *or* we successfully hear back from the
     """
 
-    def __init__(self, account: Text, user: Text, table: Text, stage: Text, private_key: Text):
+    def __init__(self, account: Text, user: Text, table: Text, stage: Text, private_key: Text,
+                 scheme: Text = DEFAULT_SCHEME, host: Text = DEFAULT_HOST, port: int = DEFAULT_PORT):
         """
         Simply instantiates all of our local state
         :param account: the name of the account who is loading
@@ -46,7 +50,7 @@ class SimpleIngestManager(object):
         :param private_key: the private key we use for token signature
         """
         self.sec_manager = SecurityManager(account, user, private_key)  # Create the token generator
-        self.url_engine = URLGenerator()
+        self.url_engine = URLGenerator(scheme=scheme, host=host, port=port)
         self.table = table
         self.stage = stage
 
