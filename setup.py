@@ -32,7 +32,8 @@ setup(
     author='Snowflake Computing',
     author_email='support@snowflake.net',
     url='https://www.snowflake.net',
-    packages=['snowflake.ingest'],
+    packages=['snowflake.ingest',
+              'snowflake.ingest.utils'],
     license='Apache',
     keywords="snowflake ingest sdk copy loading",
     # From here we describe the package classifiers
