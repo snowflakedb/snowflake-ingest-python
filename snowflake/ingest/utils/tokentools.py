@@ -81,4 +81,4 @@ class SecurityManager(object):
             self.token = jwt.encode(payload, self.private_key, algorithm=SecurityManager.ALGORITHM)
             logger.info("New Token is %s", self.token)
 
-        return self.token
+        return self.token.decode('utf-8')
