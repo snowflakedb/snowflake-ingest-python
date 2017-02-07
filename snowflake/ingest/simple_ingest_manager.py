@@ -39,20 +39,18 @@ class SimpleIngestManager(object):
     get a response *or* we successfully hear back from the
     """
 
-    def __init__(self, account: Text, user: Text, table: Text, stage: Text, private_key: Text,
+    def __init__(self, account: Text, user: Text, pipe: Text, private_key: Text,
                  scheme: Text = DEFAULT_SCHEME, host: Text = DEFAULT_HOST, port: int = DEFAULT_PORT):
         """
         Simply instantiates all of our local state
         :param account: the name of the account who is loading
         :param user: the name of the user who is loading
-        :param table: the name of the table into which data is going
-        :param stage: the name of the stage from which data is coming
+        :param pipe: the name of the pipe which we want to use for ingesting
         :param private_key: the private key we use for token signature
         """
         self.sec_manager = SecurityManager(account, user, private_key)  # Create the token generator
         self.url_engine = URLGenerator(scheme=scheme, host=host, port=port)
-        self.table = table
-        self.stage = stage
+        self.pipe = pipe
 
     def _get_auth_header(self) -> Dict[Text, Text]:
         """
@@ -71,7 +69,7 @@ class SimpleIngestManager(object):
         :return: the deserialized response from the service
         """
         # Generate the target url
-        target_url = self.url_engine.make_ingest_url(self.table, self.stage, request_id)
+        target_url = self.url_engine.make_ingest_url(self.pipe, request_id)
 
         # Make our message payload
         payload = {
@@ -94,7 +92,7 @@ class SimpleIngestManager(object):
         :return: the deserialized response from the service
         """
         # generate our history endpoint url
-        target_url = self.url_engine.make_history_url(self.table, request_id)
+        target_url = self.url_engine.make_history_url(self.pipe, request_id)
 
         # Send out our request!
         response = requests.get(target_url, headers=self._get_auth_header())
