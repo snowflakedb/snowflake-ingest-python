@@ -17,8 +17,8 @@ DEFAULT_PORT = 443  # we also target https by default implying 443
 DEFAULT_SCHEME = "https"  # we also need to set the scheme to HTTPS
 
 # Our format strings for the endpoints we need target
-INGEST_ENDPOINT_FORMAT = "/v1/data/tables/{0}/insertFiles"  # The template for an ingest request endpoint
-HISTORY_ENDPOINT_FORMAT = "/v1/data/tables/{0}/insertReport"  # The template for an ingest history endpoint
+INGEST_ENDPOINT_FORMAT = "/v1/data/pipes/{0}/insertFiles"  # The template for an ingest request endpoint
+HISTORY_ENDPOINT_FORMAT = "/v1/data/pipes/{0}/insertReport"  # The template for an ingest history endpoint
 
 # Parameter used to pass along request UUIDs
 REQUEST_ID_PARAMETER = "requestId"
@@ -61,12 +61,11 @@ class URLGenerator(object):
 
         return base
 
-    def make_ingest_url(self, table: Text, stage: Text, uuid: UUID = None) -> Text:
+    def make_ingest_url(self, pipe: Text, uuid: UUID = None) -> Text:
         """
         make_ingest_url - creates a textual representation of the target url we need to hit for
         ingesting files
-        :param table: the table into which we want to ingest files (fully qualified)
-        :param stage: the stage in which the files live (fully qualified)
+        :param pipe: the pipe which we want to use to ingest files (fully qualified)
         :param uuid: an optional UUID argument to tag this request
         :return: the completed URL
         """
@@ -74,19 +73,16 @@ class URLGenerator(object):
         # Compute the base url
         builder = self._make_base_url(uuid)
 
-        # Set the stage name
-        builder.args[STAGE_PARAMETER] = stage
-
         # Set the path for the ingest url
-        builder.path = INGEST_ENDPOINT_FORMAT.format(table)
+        builder.path = INGEST_ENDPOINT_FORMAT.format(pipe)
 
         return builder.url
 
-    def make_history_url(self, table: Text, uuid: UUID = None) -> Text:
+    def make_history_url(self, pipe: Text, uuid: UUID = None) -> Text:
         """
         make_history_url - creates a textual representation of the target url we need to hit for
         history requests
-        :param table: the table for which we want to see the see history
+        :param pipe: the pipe for which we want to see the see history
         :param uuid: an optional UUID argument to tag this request
         :return: the completed URL
         """
@@ -95,6 +91,6 @@ class URLGenerator(object):
         builder = self._make_base_url(uuid)
 
         # Set the path for the history url
-        builder.path = HISTORY_ENDPOINT_FORMAT.format(table)
+        builder.path = HISTORY_ENDPOINT_FORMAT.format(pipe)
 
         return builder.url
