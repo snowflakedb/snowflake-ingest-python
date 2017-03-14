@@ -85,14 +85,15 @@ class SimpleIngestManager(object):
         # Otherwise, just unpack the message and return that
         return response.json()
 
-    def get_history(self, request_id: UUID = None) -> Dict[Text, Any]:
+    def get_history(self, request_id: UUID = None, recent_seconds: int = None) -> Dict[Text, Any]:
         """
         get_history - returns the currently cached ingest history from the service
         :param request_id: an optional request UUID to label this
+        :param recent_seconds: an optional argument that specify the time range that history can be seen
         :return: the deserialized response from the service
         """
         # generate our history endpoint url
-        target_url = self.url_engine.make_history_url(self.pipe, request_id)
+        target_url = self.url_engine.make_history_url(self.pipe, request_id, recent_seconds)
 
         # Send out our request!
         response = requests.get(target_url, headers=self._get_auth_header())
