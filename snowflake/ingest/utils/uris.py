@@ -24,6 +24,7 @@ HISTORY_ENDPOINT_FORMAT = "/v1/data/pipes/{0}/insertReport"  # The template for 
 REQUEST_ID_PARAMETER = "requestId"
 # Parameter that we use for setting the stage for this url
 STAGE_PARAMETER = "stage"
+RECENT_HISTORY_IN_SECONDS_PARAMETER = 'recentSeconds'
 
 
 # Method to generate an the URL for an ingest request for a given table, and stage
@@ -78,12 +79,13 @@ class URLGenerator(object):
 
         return builder.url
 
-    def make_history_url(self, pipe: Text, uuid: UUID = None) -> Text:
+    def make_history_url(self, pipe: Text, uuid: UUID = None, recent_seconds: int = None) -> Text:
         """
         make_history_url - creates a textual representation of the target url we need to hit for
         history requests
         :param pipe: the pipe for which we want to see the see history
         :param uuid: an optional UUID argument to tag this request
+        :param recent_seconds: an optional argument to specify recent seconds
         :return: the completed URL
         """
 
@@ -92,5 +94,8 @@ class URLGenerator(object):
 
         # Set the path for the history url
         builder.path = HISTORY_ENDPOINT_FORMAT.format(pipe)
+        
+        if recent_seconds is not None:
+            builder.args[RECENT_HISTORY_IN_SECONDS_PARAMETER] = str(recent_seconds)
 
         return builder.url
