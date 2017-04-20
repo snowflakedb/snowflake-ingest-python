@@ -5,6 +5,7 @@ from setuptools import setup
 
 # We use this to find and deploy our unittests
 import unittest
+import os
 # We need to know the version to backfill some dependencies
 from sys import version_info, exit
 # Define our list of installation dependencies
@@ -25,9 +26,14 @@ def test_suite():
     loader = unittest.TestLoader()
     return loader.discover("tests", pattern="test_*.py")
 
+version='0.1.0'
+
+if 'SF_BUILD_NUMBER' in os.environ:
+    version += ('.' + str(os.environ['SF_BUILD_NUMBER']))
+
 setup(
     name='snowflake_ingest',
-    version='0.1.0',
+    version=version,
     description='Official SnowflakeDB File Ingest SDK',
     author='Snowflake Computing',
     author_email='support@snowflake.net',
