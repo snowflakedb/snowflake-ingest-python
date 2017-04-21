@@ -29,7 +29,7 @@ Furl, PyJWT, Requests, and Cryptography
 
 Internally, the Snowflake Ingest SDK makes use of `Furl <https://github.com/gruns/furl>`_, 
 `PyJWT <https://github.com/jpadilla/pyjwt>`_, and `Requests <http://docs.python-requests.org/en/master/>`_.
-In addition, the `cryptography <https://cryptography.io/en/latest/>` is used with PyJWT to sign JWT tokens.
+In addition, the `cryptography <https://cryptography.io/en/latest/>`_ is used with PyJWT to sign JWT tokens.
 
 
 Installation
@@ -39,3 +39,50 @@ If you would like to use this sdk, you can install it using python setuptools.
 .. code-block:: bash
 
     pip install snowflake-ingest
+    
+Usage
+=====
+Here is a simple "hello world" example for using ingest sdk.
+
+.. code-block:: python
+  
+    from snowflake.ingest import SimpleIngestManager 
+    from snowflake.ingest import StagedFile
+    import time
+
+    logger = getLogger(__name__) 
+
+    # assume public key has been registered in Snowflake 
+    private_key='abc...'
+    # file lists that already in the stage that specified in pipe definition
+    file_list=['a.csv', 'b.csv']
+    ingest_manager = SimpleIngestManager(account='testaccount',
+                                         user='ingest_user',
+                                         pipe='TESTDB.TESTSCHEMA.TESTPIPE',
+                                         private_key=private_key)
+    # list of files, but wrapped into a class  
+    staged_file_list = []                               
+    for file_name in file_list:
+        staged_file_list.append(StagedFile(file_name, None))
+
+    try: 
+        resp = ingest_manager.ingest_files(staged_file_list)
+    except HTTPError as e:
+        # HTTP error, may need to retry
+        logger.error(e)
+        exit(1)
+
+    # This means Snowflake has received file and will start loading
+    assert(resp['responseCode'] == 'SUCCESS')   
+
+    # Needs to wait for a while to get result in history
+    while True: 
+        history_resp = ingest_manager.get_history()
+
+        if len(history_resp['files']) == 2:
+            print('Ingest Report:\n')
+            print(history_resp)
+            break
+        else:
+            # wait for 20 seconds
+            time.sleep(20)
