@@ -45,7 +45,8 @@ Usage
 Here is a simple "hello world" example for using ingest sdk.
 
 .. code-block:: python
-  
+    
+    from logging import getLogger
     from snowflake.ingest import SimpleIngestManager 
     from snowflake.ingest import StagedFile
     import time
