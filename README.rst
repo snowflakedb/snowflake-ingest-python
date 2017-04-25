@@ -54,7 +54,10 @@ Here is a simple "hello world" example for using ingest sdk.
     logger = getLogger(__name__) 
 
     # assume public key has been registered in Snowflake 
-    private_key='abc...'
+    # private key in pem format
+    private_key="""-----BEGIN PRIVATE KEY-----
+                   abc...
+                   -----END PRIVATE KEY-----"""
     # file lists that already in the stage that specified in pipe definition
     file_list=['a.csv', 'b.csv']
     ingest_manager = SimpleIngestManager(account='testaccount',
