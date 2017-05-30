@@ -51,6 +51,7 @@ class SimpleIngestManager(object):
         self.sec_manager = SecurityManager(account, user, private_key)  # Create the token generator
         self.url_engine = URLGenerator(scheme=scheme, host=host, port=port)
         self.pipe = pipe
+        self._next_begin_mark = None
 
     def _get_auth_header(self) -> Dict[Text, Text]:
         """
@@ -93,13 +94,16 @@ class SimpleIngestManager(object):
         :return: the deserialized response from the service
         """
         # generate our history endpoint url
-        target_url = self.url_engine.make_history_url(self.pipe, request_id, recent_seconds)
+        target_url = self.url_engine.make_history_url(self.pipe, request_id, recent_seconds, self._next_begin_mark)
 
         # Send out our request!
         response = requests.get(target_url, headers=self._get_auth_header())
 
         # If we don't have a valid response, just raise an error
         response.raise_for_status()
+
+        # update begin mark for next history request
+        self._next_begin_mark = response.json()['nextBeginMark']
 
         # Otherwise just unpack the message and return that with the status
         return response.json()
