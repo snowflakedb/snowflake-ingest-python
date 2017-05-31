@@ -22,6 +22,7 @@ from typing import Text, Dict, Any
 from uuid import UUID
 
 import requests
+import json
 
 # We just need a simple named tuple to represent remote files
 StagedFile = namedtuple("StagedFile", ["path", "size"])
@@ -106,4 +107,4 @@ class SimpleIngestManager(object):
         self._next_begin_mark = response.json()['nextBeginMark']
 
         # Otherwise just unpack the message and return that with the status
-        return response.json()
+        return json.loads(response.text)
