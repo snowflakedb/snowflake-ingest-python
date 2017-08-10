@@ -9,7 +9,7 @@ import os
 # We need to know the version to backfill some dependencies
 from sys import version_info, exit
 # Define our list of installation dependencies
-DEPENDS = ["pyjwt", "requests", "furl", "cryptography"]
+DEPENDS = ["pyjwt", "snowflake-connector-python", "furl", "cryptography"]
 
 # If we're at version less than 3.4 - fail
 if version_info[0] < 3 or version_info[1] < 4:
