@@ -21,7 +21,13 @@ from typing import Text, Dict, Any
 # UUID for typing formation
 from uuid import UUID
 
-import requests
+# import to use ocsp module in python connector
+# this import will inject ocsp check method into
+# botocore.vendored.requests library
+import snowflake.connector
+
+# use requsts library bundled in botocore
+from botocore.vendored import requests
 
 # We just need a simple named tuple to represent remote files
 StagedFile = namedtuple("StagedFile", ["path", "size"])
