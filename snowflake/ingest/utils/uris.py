@@ -12,7 +12,7 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 # URI Construction constants we use for making a target URL
-DEFAULT_HOST = "snowflakecomputing.com"  # by default we target the Snowflake US instance
+DEFAULT_HOST_FMT = "{}.snowflakecomputing.com"  # by default we target the Snowflake US instance
 DEFAULT_PORT = 443  # we also target https by default implying 443
 DEFAULT_SCHEME = "https"  # we also need to set the scheme to HTTPS
 
@@ -34,7 +34,7 @@ class URLGenerator(object):
     URLGenerator - this class handles creating the URLs for a requests to
     the Snowflake service
     """
-    def __init__(self, scheme: Text = DEFAULT_SCHEME, host: Text = DEFAULT_HOST,  port: int = DEFAULT_PORT):
+    def __init__(self, host: Text, scheme: Text = DEFAULT_SCHEME, port: int = DEFAULT_PORT):
         """
         This constructor simply stashes the basic portions of the request URL such that the user
         doesn't have to repeatedly provide them

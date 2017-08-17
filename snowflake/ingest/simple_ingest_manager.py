@@ -8,7 +8,7 @@ from .utils import SecurityManager
 
 # This will manage our URL generation
 from .utils import URLGenerator
-from .utils.uris import DEFAULT_HOST
+from .utils.uris import DEFAULT_HOST_FMT
 from .utils.uris import DEFAULT_PORT
 from .utils.uris import DEFAULT_SCHEME
 
@@ -29,6 +29,9 @@ import snowflake.connector
 # use requsts library bundled in botocore
 from botocore.vendored import requests
 
+from logging import getLogger
+logger = getLogger(__name__)
+
 # We just need a simple named tuple to represent remote files
 StagedFile = namedtuple("StagedFile", ["path", "size"])
 
@@ -46,7 +49,7 @@ class SimpleIngestManager(object):
     """
 
     def __init__(self, account: Text, user: Text, pipe: Text, private_key: Text,
-                 scheme: Text = DEFAULT_SCHEME, host: Text = DEFAULT_HOST, port: int = DEFAULT_PORT):
+                 scheme: Text = DEFAULT_SCHEME, host: Text = None, port: int = DEFAULT_PORT):
         """
         Simply instantiates all of our local state
         :param account: the name of the account who is loading
@@ -55,7 +58,9 @@ class SimpleIngestManager(object):
         :param private_key: the private key we use for token signature
         """
         self.sec_manager = SecurityManager(account, user, private_key)  # Create the token generator
-        self.url_engine = URLGenerator(scheme=scheme, host=host, port=port)
+        self.url_engine = URLGenerator(scheme=scheme,
+                                       host=host if host is not None else DEFAULT_HOST_FMT.format(account),
+                                       port=port)
         self.pipe = pipe
         self._next_begin_mark = None
 
@@ -77,6 +82,7 @@ class SimpleIngestManager(object):
         """
         # Generate the target url
         target_url = self.url_engine.make_ingest_url(self.pipe, request_id)
+        logger.info('Ingest file request url: %s', target_url)
 
         # Make our message payload
         payload = {
@@ -85,6 +91,7 @@ class SimpleIngestManager(object):
 
         # Send our request!
         response = requests.post(target_url, json=payload, headers=self._get_auth_header())
+        logger.debug('Ingest response: %s', str(response))
 
         # Now, if we have a response that is not 200, raise an error
         response.raise_for_status()
@@ -101,6 +108,7 @@ class SimpleIngestManager(object):
         """
         # generate our history endpoint url
         target_url = self.url_engine.make_history_url(self.pipe, request_id, recent_seconds, self._next_begin_mark)
+        logger.info('Get history request url: %s', target_url)
 
         # Send out our request!
         response = requests.get(target_url, headers=self._get_auth_header())
