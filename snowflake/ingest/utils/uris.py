@@ -130,9 +130,9 @@ class URLGenerator(object):
         # Set the path for the history url
         builder.path = HISTORY_SCAN_ENDPOINT_FORMAT.format(pipe)
 
-        builder.args[HISTORY_RANGE_START_INCLUSIVE] = start_time_inclusive + 'Z'
+        builder.args[HISTORY_RANGE_START_INCLUSIVE] = start_time_inclusive
 
         if end_time_exclusive is not None:
-            builder.args[HISTORY_RANGE_END_EXCLUSIVE] = end_time_exclusive + 'Z'
+            builder.args[HISTORY_RANGE_END_EXCLUSIVE] = end_time_exclusive
 
         return builder.url
