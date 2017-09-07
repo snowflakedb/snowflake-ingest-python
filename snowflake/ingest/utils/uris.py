@@ -19,14 +19,18 @@ DEFAULT_SCHEME = "https"  # we also need to set the scheme to HTTPS
 # Our format strings for the endpoints we need target
 INGEST_ENDPOINT_FORMAT = "/v1/data/pipes/{0}/insertFiles"  # The template for an ingest request endpoint
 HISTORY_ENDPOINT_FORMAT = "/v1/data/pipes/{0}/insertReport"  # The template for an ingest history endpoint
+HISTORY_SCAN_ENDPOINT_FORMAT = "/v1/data/pipes/{0}/loadHistoryScan" # The template for ingest history range endpoint
 
 # Parameter used to pass along request UUIDs
 REQUEST_ID_PARAMETER = "requestId"
 # Parameter that we use for setting the stage for this url
 STAGE_PARAMETER = "stage"
+# Parameters for insertReport endpoint
 RECENT_HISTORY_IN_SECONDS_PARAMETER = 'recentSeconds'
 HISTORY_BEGIN_MARK = 'beginMark'
-
+# Parameters for loadHistoryScan endpoint
+HISTORY_RANGE_START_INCLUSIVE = 'startTimeInclusive'
+HISTORY_RANGE_END_EXCLUSIVE = 'endTimeExclusive'
 
 # Method to generate an the URL for an ingest request for a given table, and stage
 class URLGenerator(object):
@@ -80,8 +84,8 @@ class URLGenerator(object):
 
         return builder.url
 
-    def make_history_url(self, pipe: Text, uuid: UUID = None, recent_seconds: int = None,
-                         begin_mark: Text = None) -> Text:
+    def make_history_url(self, pipe: Text, recent_seconds: int = None,
+            begin_mark: Text = None, uuid: UUID = None) -> Text:
         """
         make_history_url - creates a textual representation of the target url we need to hit for
         history requests
@@ -104,5 +108,31 @@ class URLGenerator(object):
 
         if begin_mark is not None:
             builder.args[HISTORY_BEGIN_MARK] = str(begin_mark)
+
+        return builder.url
+
+    def make_history_range_url(self, pipe: Text, start_time_inclusive: Text,
+            end_time_exclusive: Text = None, uuid: UUID = None) -> Text:
+        """
+        make_history_url - creates [M#Ka textual representation of the target url we need to hit for
+        history range scan requests
+        :param pipe: the pipe for which we want to see the see history
+        :param uuid: an optional UUID argument to tag this request
+        :param start_time_inclusive: Timestamp in ISO-8601 format. Start of the time range to retrieve load history data.
+        :param end_time_exclusive: Timestamp in ISO-8601 format. End of the time range to retrieve load history data.
+                                    If omitted, then CURRENT_TIMESTAMP() is used as the end of the range.
+        :return: the completed URL
+        """
+
+        # Compute the base url
+        builder = self._make_base_url(uuid)
+
+        # Set the path for the history url
+        builder.path = HISTORY_SCAN_ENDPOINT_FORMAT.format(pipe)
+
+        builder.args[HISTORY_RANGE_START_INCLUSIVE] = start_time_inclusive + 'Z'
+
+        if end_time_exclusive is not None:
+            builder.args[HISTORY_RANGE_END_EXCLUSIVE] = end_time_exclusive + 'Z'
 
         return builder.url
