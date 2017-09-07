@@ -75,7 +75,7 @@ class SimpleIngestManager(object):
 
     def ingest_files(self, staged_files: [StagedFile], request_id: UUID = None) -> Dict[Text, Any]:
         """
-        ingest_files - figures out the
+        ingest_files - Informs Snowflake about the files to be ingested into a table through this pipe
         :param staged_files: a list of files we want to ingest
         :param request_id: an optional request uuid to label this request
         :return: the deserialized response from the service
@@ -99,7 +99,7 @@ class SimpleIngestManager(object):
         # Otherwise, just unpack the message and return that
         return response.json()
 
-    def get_history(self, request_id: UUID = None, recent_seconds: int = None) -> Dict[Text, Any]:
+    def get_history(self, recent_seconds: int = None, request_id: UUID = None) -> Dict[Text, Any]:
         """
         get_history - returns the currently cached ingest history from the service
         :param request_id: an optional request UUID to label this
@@ -107,17 +107,40 @@ class SimpleIngestManager(object):
         :return: the deserialized response from the service
         """
         # generate our history endpoint url
-        target_url = self.url_engine.make_history_url(self.pipe, request_id, recent_seconds, self._next_begin_mark)
+        target_url = self.url_engine.make_history_url(self.pipe, recent_seconds, self._next_begin_mark, request_id)
         logger.info('Get history request url: %s', target_url)
 
         # Send out our request!
         response = requests.get(target_url, headers=self._get_auth_header())
 
-        # If we don't have a valid response, just raise an error
+        # Now, if we have a response that is not 200, raise an error
         response.raise_for_status()
 
         # update begin mark for next history request
         self._next_begin_mark = response.json()['nextBeginMark']
+
+        # Otherwise just unpack the message and return that with the status
+        return response.json()
+
+    def get_history_range(self, start_time_inclusive: Text, end_time_exclusive: Text = None,
+            request_id: UUID = None) -> Dict[Text, Any]:
+        """
+        get_history_range - returns the ingest history between two points in time
+        :param request_id: an optional request UUID to label this
+        :param start_time_inclusive: Timestamp in ISO-8601 format. Start of the time range to retrieve load history data.
+        :param end_time_exclusive: Timestamp in ISO-8601 format. End of the time range to retrieve load history data.
+                                    If omitted, then CURRENT_TIMESTAMP() is used as the end of the range.
+        :return: the deserialized response from the service
+        """
+        # generate our history endpoint url
+        target_url = self.url_engine.make_history_range_url(self.pipe, start_time_inclusive, end_time_exclusive, request_id)
+        logger.info('Get history range request url: %s', target_url)
+
+        # Send out our request!
+        response = requests.get(target_url, headers=self._get_auth_header())
+
+        # Now, if we have a response that is not 200, raise an error
+        response.raise_for_status()
 
         # Otherwise just unpack the message and return that with the status
         return response.json()
