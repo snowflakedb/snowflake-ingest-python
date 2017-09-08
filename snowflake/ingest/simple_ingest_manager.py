@@ -11,6 +11,7 @@ from .utils import URLGenerator
 from .utils.uris import DEFAULT_HOST_FMT
 from .utils.uris import DEFAULT_PORT
 from .utils.uris import DEFAULT_SCHEME
+from .version import VERSION
 
 # We use a named tuple to represent remote files
 from collections import namedtuple
@@ -26,6 +27,9 @@ from uuid import UUID
 # botocore.vendored.requests library
 import snowflake.connector
 
+import sys
+import platform
+
 # use requsts library bundled in botocore
 from botocore.vendored import requests
 
@@ -37,6 +41,18 @@ StagedFile = namedtuple("StagedFile", ["path", "size"])
 
 AUTH_HEADER = "Authorization"  # Authorization header name
 BEARER_FORMAT = "BEARER {0}"  # The format of this bearer
+
+USER_AGENT_HEADER = "User-Agent" # User-Agent header name
+CLIENT_NAME = u"SnowpipePythonSDK" # Don't change!
+CLIENT_VERSION = u'.'.join([str(v) for v in VERSION[:3]])
+PLATFORM = platform.platform()
+PYTHON_VERSION = u'.'.join(str(v) for v in sys.version_info[:3])
+SNOWPIPE_SDK_USER_AGENT = \
+        u'{name}/{version}/{python_version}/{platform}'.format(
+                name=CLIENT_NAME,
+                version=CLIENT_VERSION,
+                python_version=PYTHON_VERSION,
+                platform=PLATFORM)
 
 OK = 200  # Is this Response OK?
 
@@ -73,9 +89,25 @@ class SimpleIngestManager(object):
         token_bearer = BEARER_FORMAT.format(self.sec_manager.get_token())
         return {AUTH_HEADER: token_bearer}
 
+    def _get_user_agent_header(self) -> Dict[Text, Text]:
+        """
+        _get_user_agent_header - method to generate the user-agent header for our http requests
+        :return: A singleton mapping for user agent and sdk version
+        """
+        return {USER_AGENT_HEADER: SNOWPIPE_SDK_USER_AGENT}
+
+    def _get_headers(self) -> Dict[Text, Text]:
+        """
+        _get_headers - get all required SDK headers to be sent to the service
+        :return: Array of headers to be sent
+        """
+        headers = self._get_auth_header()
+        headers.update(self._get_user_agent_header())
+        return headers
+
     def ingest_files(self, staged_files: [StagedFile], request_id: UUID = None) -> Dict[Text, Any]:
         """
-        ingest_files - figures out the
+        ingest_files - Informs Snowflake about the files to be ingested into a table through this pipe
         :param staged_files: a list of files we want to ingest
         :param request_id: an optional request uuid to label this request
         :return: the deserialized response from the service
@@ -90,7 +122,8 @@ class SimpleIngestManager(object):
         }
 
         # Send our request!
-        response = requests.post(target_url, json=payload, headers=self._get_auth_header())
+        headers = self._get_headers()
+        response = requests.post(target_url, json=payload, headers=headers)
         logger.debug('Ingest response: %s', str(response))
 
         # Now, if we have a response that is not 200, raise an error
@@ -99,7 +132,7 @@ class SimpleIngestManager(object):
         # Otherwise, just unpack the message and return that
         return response.json()
 
-    def get_history(self, request_id: UUID = None, recent_seconds: int = None) -> Dict[Text, Any]:
+    def get_history(self, recent_seconds: int = None, request_id: UUID = None) -> Dict[Text, Any]:
         """
         get_history - returns the currently cached ingest history from the service
         :param request_id: an optional request UUID to label this
@@ -107,17 +140,42 @@ class SimpleIngestManager(object):
         :return: the deserialized response from the service
         """
         # generate our history endpoint url
-        target_url = self.url_engine.make_history_url(self.pipe, request_id, recent_seconds, self._next_begin_mark)
+        target_url = self.url_engine.make_history_url(self.pipe, recent_seconds, self._next_begin_mark, request_id)
         logger.info('Get history request url: %s', target_url)
 
         # Send out our request!
-        response = requests.get(target_url, headers=self._get_auth_header())
+        headers = self._get_headers()
+        response = requests.get(target_url, headers=headers)
 
-        # If we don't have a valid response, just raise an error
+        # Now, if we have a response that is not 200, raise an error
         response.raise_for_status()
 
         # update begin mark for next history request
         self._next_begin_mark = response.json()['nextBeginMark']
+
+        # Otherwise just unpack the message and return that with the status
+        return response.json()
+
+    def get_history_range(self, start_time_inclusive: Text, end_time_exclusive: Text = None,
+            request_id: UUID = None) -> Dict[Text, Any]:
+        """
+        get_history_range - returns the ingest history between two points in time
+        :param request_id: an optional request UUID to label this
+        :param start_time_inclusive: Timestamp in ISO-8601 format. Start of the time range to retrieve load history data.
+        :param end_time_exclusive: Timestamp in ISO-8601 format. End of the time range to retrieve load history data.
+                                    If omitted, then CURRENT_TIMESTAMP() is used as the end of the range.
+        :return: the deserialized response from the service
+        """
+        # generate our history endpoint url
+        target_url = self.url_engine.make_history_range_url(self.pipe, start_time_inclusive, end_time_exclusive, request_id)
+        logger.info('Get history range request url: %s', target_url)
+
+        # Send out our request!
+        headers = self._get_headers()
+        response = requests.get(target_url, headers=headers)
+
+        # Now, if we have a response that is not 200, raise an error
+        response.raise_for_status()
 
         # Otherwise just unpack the message and return that with the status
         return response.json()

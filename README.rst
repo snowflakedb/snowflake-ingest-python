@@ -93,3 +93,11 @@ Here is a simple "hello world" example for using ingest sdk.
         else:
             # wait for 20 seconds
             time.sleep(20)
+
+    // Valid ISO 8601 format requires Z at the end
+    hour = timedelta(hours=1)
+    date = datetime.datetime.utcnow() - hour
+    history_range_resp = ingest_manager.get_history_range(date.isoformat() + 'Z')
+
+    print('\nHistory scan report: \n')
+    print(history_range_resp)
