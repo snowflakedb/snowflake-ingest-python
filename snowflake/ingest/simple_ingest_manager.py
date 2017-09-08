@@ -1,3 +1,4 @@
+# Copyright (c) 2012-2017 Snowflake Computing Inc. All rights reserved.
 """
 simple_ingest_manager - Creates a basic ingest manager that synchronously sends
 requests to the Snowflake Ingest service
