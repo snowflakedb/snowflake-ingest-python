@@ -1,3 +1,5 @@
+# Copyright (c) 2012-2017 Snowflake Computing Inc. All rights reserved.
+
 """
 tokentools.py - provides services for automatically creating and renewing
 JWT tokens for authenticating to Snowflake
