@@ -12,6 +12,7 @@ from .utils.uris import DEFAULT_HOST_FMT
 from .utils.uris import DEFAULT_PORT
 from .utils.uris import DEFAULT_SCHEME
 from .error import IngestResponseError
+from .version import VERSION
 
 # We use a named tuple to represent remote files
 from collections import namedtuple
@@ -27,6 +28,9 @@ from uuid import UUID
 # botocore.vendored.requests library
 import snowflake.connector
 
+import sys
+import platform
+
 # use requsts library bundled in botocore
 from botocore.vendored import requests
 from botocore.vendored.requests import Response
@@ -39,6 +43,18 @@ StagedFile = namedtuple("StagedFile", ["path", "size"])
 
 AUTH_HEADER = "Authorization"  # Authorization header name
 BEARER_FORMAT = "BEARER {0}"  # The format of this bearer
+
+USER_AGENT_HEADER = "User-Agent" # User-Agent header name
+CLIENT_NAME = u"SnowpipePythonSDK" # Don't change!
+CLIENT_VERSION = u'.'.join([str(v) for v in VERSION[:3]])
+PLATFORM = platform.platform()
+PYTHON_VERSION = u'.'.join(str(v) for v in sys.version_info[:3])
+SNOWPIPE_SDK_USER_AGENT = \
+        u'{name}/{version}/{python_version}/{platform}'.format(
+                name=CLIENT_NAME,
+                version=CLIENT_VERSION,
+                python_version=PYTHON_VERSION,
+                platform=PLATFORM)
 
 OK = 200  # Is this Response OK?
 
@@ -75,6 +91,22 @@ class SimpleIngestManager(object):
         token_bearer = BEARER_FORMAT.format(self.sec_manager.get_token())
         return {AUTH_HEADER: token_bearer}
 
+    def _get_user_agent_header(self) -> Dict[Text, Text]:
+        """
+        _get_user_agent_header - method to generate the user-agent header for our http requests
+        :return: A singleton mapping for user agent and sdk version
+        """
+        return {USER_AGENT_HEADER: SNOWPIPE_SDK_USER_AGENT}
+
+    def _get_headers(self) -> Dict[Text, Text]:
+        """
+        _get_headers - get all required SDK headers to be sent to the service
+        :return: Array of headers to be sent
+        """
+        headers = self._get_auth_header()
+        headers.update(self._get_user_agent_header())
+        return headers
+
     def ingest_files(self, staged_files: [StagedFile], request_id: UUID = None) -> Dict[Text, Any]:
         """
         ingest_files - Informs Snowflake about the files to be ingested into a table through this pipe
@@ -92,7 +124,8 @@ class SimpleIngestManager(object):
         }
 
         # Send our request!
-        response = requests.post(target_url, json=payload, headers=self._get_auth_header())
+        headers = self._get_headers()
+        response = requests.post(target_url, json=payload, headers=headers)
         logger.debug('Ingest response: %s', str(response))
 
         return self._handle_response(response)
@@ -109,7 +142,8 @@ class SimpleIngestManager(object):
         logger.info('Get history request url: %s', target_url)
 
         # Send out our request!
-        response = requests.get(target_url, headers=self._get_auth_header())
+        headers = self._get_headers()
+        response = requests.get(target_url, headers=headers)
 
         # Otherwise just unpack the message and return that with the status
         result_json = self._handle_response(response)
@@ -132,7 +166,8 @@ class SimpleIngestManager(object):
         logger.info('Get history range request url: %s', target_url)
 
         # Send out our request!
-        response = requests.get(target_url, headers=self._get_auth_header())
+        headers = self._get_headers()
+        response = requests.get(target_url, headers=headers)
 
         return self._handle_response(response)
 
