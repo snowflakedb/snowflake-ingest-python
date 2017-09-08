@@ -26,7 +26,9 @@ def test_suite():
     loader = unittest.TestLoader()
     return loader.discover("tests", pattern="test_*.py")
 
-version='0.1.0'
+from snowflake.ingest.version import VERSION
+
+version='.'.join([str(v) for v in VERSION if v is not None])
 
 if 'SF_BUILD_NUMBER' in os.environ:
     version += ('.' + str(os.environ['SF_BUILD_NUMBER']))
