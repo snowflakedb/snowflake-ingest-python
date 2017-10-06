@@ -12,8 +12,8 @@ from .utils import URLGenerator
 from .utils.uris import DEFAULT_HOST_FMT
 from .utils.uris import DEFAULT_PORT
 from .utils.uris import DEFAULT_SCHEME
-from .error import IngestResponseError
 from .version import VERSION
+from .error import IngestResponseError
 
 # We use a named tuple to represent remote files
 from collections import namedtuple
@@ -150,6 +150,7 @@ class SimpleIngestManager(object):
         result_json = self._handle_response(response)
 
         self._next_begin_mark = result_json['nextBeginMark']
+        
         return result_json
 
     def get_history_range(self, start_time_inclusive: Text, end_time_exclusive: Text = None,
