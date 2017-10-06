@@ -178,3 +178,4 @@ class SimpleIngestManager(object):
             return response.json()
         else:
             raise IngestResponseError(response)
+            
