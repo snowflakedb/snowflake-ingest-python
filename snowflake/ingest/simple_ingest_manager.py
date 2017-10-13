@@ -11,9 +11,8 @@ from .utils import SecurityManager
 from .utils import URLGenerator
 from .utils.uris import DEFAULT_HOST_FMT
 from .utils.uris import DEFAULT_PORT
-from .utils.uris import DEFAULT_SCHEME
-
 from version import VERSION
+from .error import IngestResponseError
 
 # We use a named tuple to represent remote files
 from collections import namedtuple
@@ -34,6 +33,7 @@ import platform
 
 # use requsts library bundled in botocore
 from botocore.vendored import requests
+from botocore.vendored.requests import Response
 
 from logging import getLogger
 logger = getLogger(__name__)
@@ -128,11 +128,7 @@ class SimpleIngestManager(object):
         response = requests.post(target_url, json=payload, headers=headers)
         logger.debug('Ingest response: %s', str(response))
 
-        # Now, if we have a response that is not 200, raise an error
-        response.raise_for_status()
-
-        # Otherwise, just unpack the message and return that
-        return response.json()
+        return self._handle_response(response)
 
     def get_history(self, recent_seconds: int = None, request_id: UUID = None) -> Dict[Text, Any]:
         """
@@ -149,14 +145,12 @@ class SimpleIngestManager(object):
         headers = self._get_headers()
         response = requests.get(target_url, headers=headers)
 
-        # Now, if we have a response that is not 200, raise an error
-        response.raise_for_status()
-
-        # update begin mark for next history request
-        self._next_begin_mark = response.json()['nextBeginMark']
-
         # Otherwise just unpack the message and return that with the status
-        return response.json()
+        result_json = self._handle_response(response)
+
+        self._next_begin_mark = result_json['nextBeginMark']
+        
+        return result_json
 
     def get_history_range(self, start_time_inclusive: Text, end_time_exclusive: Text = None,
             request_id: UUID = None) -> Dict[Text, Any]:
@@ -176,8 +170,11 @@ class SimpleIngestManager(object):
         headers = self._get_headers()
         response = requests.get(target_url, headers=headers)
 
-        # Now, if we have a response that is not 200, raise an error
-        response.raise_for_status()
+        return self._handle_response(response)
 
-        # Otherwise just unpack the message and return that with the status
-        return response.json()
+    def _handle_response(self, response: Response) -> Dict[Text, Any]:
+        if response.ok:
+            return response.json()
+        else:
+            raise IngestResponseError(response)
+            
