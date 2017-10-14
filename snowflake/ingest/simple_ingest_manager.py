@@ -11,6 +11,7 @@ from .utils import SecurityManager
 from .utils import URLGenerator
 from .utils.uris import DEFAULT_HOST_FMT
 from .utils.uris import DEFAULT_PORT
+from .utils.uris import DEFAULT_SCHEME
 from version import VERSION
 from .error import IngestResponseError
 
