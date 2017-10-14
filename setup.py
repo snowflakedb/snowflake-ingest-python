@@ -26,7 +26,7 @@ def test_suite():
     loader = unittest.TestLoader()
     return loader.discover("tests", pattern="test_*.py")
 
-from snowflake.ingest.version import VERSION
+from version import VERSION
 
 version='.'.join([str(v) for v in VERSION if v is not None])
 
