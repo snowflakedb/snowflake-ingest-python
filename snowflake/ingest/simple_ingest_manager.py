@@ -12,7 +12,7 @@ from .utils import URLGenerator
 from .utils.uris import DEFAULT_HOST_FMT
 from .utils.uris import DEFAULT_PORT
 from .utils.uris import DEFAULT_SCHEME
-from version import VERSION
+from .version import __version__
 from .error import IngestResponseError
 
 # We use a named tuple to represent remote files
@@ -47,7 +47,7 @@ BEARER_FORMAT = "BEARER {0}"  # The format of this bearer
 
 USER_AGENT_HEADER = "User-Agent" # User-Agent header name
 CLIENT_NAME = u"SnowpipePythonSDK" # Don't change!
-CLIENT_VERSION = u'.'.join([str(v) for v in VERSION[:3]])
+CLIENT_VERSION = __version__
 PLATFORM = platform.platform()
 PYTHON_VERSION = u'.'.join(str(v) for v in sys.version_info[:3])
 SNOWPIPE_SDK_USER_AGENT = \

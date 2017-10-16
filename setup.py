@@ -19,6 +19,9 @@ if version_info[0] < 3 or version_info[1] < 4:
 elif version_info[1] == 4:
     DEPENDS.append("typing")
 
+here = os.path.abspath(os.path.dirname(__file__))
+
+
 def test_suite():
     """
     Defines the test suite for the snowflake ingest SDK
@@ -26,16 +29,19 @@ def test_suite():
     loader = unittest.TestLoader()
     return loader.discover("tests", pattern="test_*.py")
 
-from version import VERSION
+about = {}
+with open(os.path.join(here, 'snowflake', 'ingest', 'version.py'),
+          mode='r', encoding='utf-8') as f:
+    exec(f.read(), about)
 
-version='.'.join([str(v) for v in VERSION if v is not None])
+__version__ = about['__version__']
 
 if 'SF_BUILD_NUMBER' in os.environ:
-    version += ('.' + str(os.environ['SF_BUILD_NUMBER']))
+    __version__ += ('.' + str(os.environ['SF_BUILD_NUMBER']))
 
 setup(
     name='snowflake_ingest',
-    version=version,
+    version=__version__,
     description='Official SnowflakeDB File Ingest SDK',
     author='Snowflake Computing',
     author_email='support@snowflake.net',
