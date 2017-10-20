@@ -9,11 +9,11 @@ from .utils import SecurityManager
 
 # This will manage our URL generation
 from .utils import URLGenerator
+from .utils.network import SnowflakeRestful
 from .utils.uris import DEFAULT_HOST_FMT
 from .utils.uris import DEFAULT_PORT
 from .utils.uris import DEFAULT_SCHEME
 from .version import __version__
-from .error import IngestResponseError
 
 # We use a named tuple to represent remote files
 from collections import namedtuple
@@ -24,17 +24,8 @@ from typing import Text, Dict, Any
 # UUID for typing formation
 from uuid import UUID
 
-# import to use ocsp module in python connector
-# this import will inject ocsp check method into
-# botocore.vendored.requests library
-import snowflake.connector
-
 import sys
 import platform
-
-# use requsts library bundled in botocore
-from botocore.vendored import requests
-from botocore.vendored.requests import Response
 
 from logging import getLogger
 logger = getLogger(__name__)
@@ -82,6 +73,7 @@ class SimpleIngestManager(object):
                                        port=port)
         self.pipe = pipe
         self._next_begin_mark = None
+        self.restful = SnowflakeRestful()
 
     def _get_auth_header(self) -> Dict[Text, Text]:
         """
@@ -126,10 +118,10 @@ class SimpleIngestManager(object):
 
         # Send our request!
         headers = self._get_headers()
-        response = requests.post(target_url, json=payload, headers=headers)
-        logger.debug('Ingest response: %s', str(response))
+        response_body = self.restful.post(target_url, json=payload, headers=headers)
+        logger.debug('Ingest response: %s', str(response_body))
 
-        return self._handle_response(response)
+        return response_body
 
     def get_history(self, recent_seconds: int = None, request_id: UUID = None) -> Dict[Text, Any]:
         """
@@ -144,14 +136,11 @@ class SimpleIngestManager(object):
 
         # Send out our request!
         headers = self._get_headers()
-        response = requests.get(target_url, headers=headers)
+        response_body = self.restful.get(target_url, headers=headers)
 
-        # Otherwise just unpack the message and return that with the status
-        result_json = self._handle_response(response)
-
-        self._next_begin_mark = result_json['nextBeginMark']
+        self._next_begin_mark = response_body['nextBeginMark']
         
-        return result_json
+        return response_body
 
     def get_history_range(self, start_time_inclusive: Text, end_time_exclusive: Text = None,
             request_id: UUID = None) -> Dict[Text, Any]:
@@ -169,13 +158,7 @@ class SimpleIngestManager(object):
 
         # Send out our request!
         headers = self._get_headers()
-        response = requests.get(target_url, headers=headers)
+        response = self.restful.get(target_url, headers=headers)
 
-        return self._handle_response(response)
+        return response
 
-    def _handle_response(self, response: Response) -> Dict[Text, Any]:
-        if response.ok:
-            return response.json()
-        else:
-            raise IngestResponseError(response)
-            
