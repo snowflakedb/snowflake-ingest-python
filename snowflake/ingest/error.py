@@ -1,3 +1,4 @@
+# Copyright (c) 2012-2017 Snowflake Computing Inc. All rights reserved.
 from botocore.vendored.requests import Response
 
 
@@ -12,7 +13,7 @@ class IngestResponseError(Exception):
             json_body = response.json()
         except ValueError:
             self.message = 'Http Error: {}, Message: {}'.format(self.http_error_code,
-                                                                response.text())
+                                                                response.reason)
             return
 
         self.code = json_body[u'code']
