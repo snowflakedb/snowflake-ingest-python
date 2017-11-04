@@ -74,8 +74,7 @@ Here is a simple "hello world" example for using ingest sdk.
 
     try: 
         resp = ingest_manager.ingest_files(staged_file_list)
-    except HTTPError as e:
-        # HTTP error, may need to retry
+    except IngestResponseError as e:
         logger.error(e)
         exit(1)
 
@@ -83,7 +82,7 @@ Here is a simple "hello world" example for using ingest sdk.
     assert(resp['responseCode'] == 'SUCCESS')   
 
     # Needs to wait for a while to get result in history
-    while True: 
+    while True:
         history_resp = ingest_manager.get_history()
 
         if len(history_resp['files']) == 2:
