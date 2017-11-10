@@ -21,7 +21,6 @@ elif version_info[1] == 4:
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-
 def test_suite():
     """
     Defines the test suite for the snowflake ingest SDK
@@ -39,10 +38,14 @@ __version__ = about['__version__']
 if 'SF_BUILD_NUMBER' in os.environ:
     __version__ += ('.' + str(os.environ['SF_BUILD_NUMBER']))
 
+with open(os.path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
+        long_description = f.read()
+
 setup(
     name='snowflake_ingest',
     version=__version__,
     description='Official SnowflakeDB File Ingest SDK',
+    long_description=long_description,
     author='Snowflake Computing',
     author_email='support@snowflake.net',
     url='https://www.snowflake.net',
@@ -50,6 +53,10 @@ setup(
               'snowflake.ingest.utils'],
     license='Apache',
     keywords="snowflake ingest sdk copy loading",
+
+    package_data={
+        'snowflake.ingest':['*.rst', 'LICENSE']
+    },
     # From here we describe the package classifiers
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
