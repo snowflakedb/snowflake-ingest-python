@@ -8,6 +8,15 @@ JWT tokens for authenticating to Snowflake
 from typing import Text
 from datetime import timedelta, datetime
 from logging import getLogger
+from cryptography.exceptions import UnsupportedAlgorithm
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from cryptography.hazmat.primitives.serialization import Encoding
+from cryptography.hazmat.primitives.serialization import PublicFormat
+from cryptography.hazmat.backends import default_backend
+from ..error import IngestClientError
+from ..errorcode import ERR_INVALID_PRIVATE_KEY
+import base64
+import hashlib
 
 import jwt
 
@@ -16,6 +25,7 @@ logger = getLogger(__name__)
 ISSUER = "iss"
 EXPIRE_TIME = "exp"
 ISSUE_TIME = "iat"
+SUBJECT = "sub"
 
 
 class SecurityManager(object):
@@ -66,11 +76,16 @@ class SecurityManager(object):
             # Calculate the next time we need to renew the token
             self.renew_time = now + self.renewal_delay
 
+            public_key_fp = self.calculate_public_key_fingerprint(self.private_key)
+
             # Create our payload
             payload = {
 
-                # The issuer is the fully qualified user name
-                ISSUER: self.qualified_username,
+                # The issuer is the public key fingerprint
+                ISSUER: self.qualified_username + '.' + public_key_fp,
+
+                # subject is user's fully qualified username
+                SUBJECT: self.qualified_username,
 
                 # The payload was issued at this point it time
                 ISSUE_TIME: now,
@@ -84,3 +99,30 @@ class SecurityManager(object):
             logger.info("New Token is %s", self.token)
 
         return self.token.decode('utf-8')
+
+    def calculate_public_key_fingerprint(self, private_key: Text) -> Text:
+        """
+        Given a private key in pem format, return the public key fingerprint
+        :param private_key: private key string
+        :return: public key fingerprint
+        """
+        try:
+            private_key = load_pem_private_key(private_key.encode(), None, default_backend())
+        except (ValueError,  UnsupportedAlgorithm) as e:
+            raise IngestClientError(
+                    code=ERR_INVALID_PRIVATE_KEY,
+                    message='Invalid private key. {}'.format(e))
+
+        # get the raw bytes of public key
+        public_key_raw = private_key.public_key().public_bytes(Encoding.DER, PublicFormat.SubjectPublicKeyInfo)
+
+        # take sha256 on raw bytes and then do base64 encode
+        sha256hash = hashlib.sha256()
+        sha256hash.update(public_key_raw)
+
+        public_key_fp = 'SHA256:' + base64.b64encode(sha256hash.digest()).decode('utf-8')
+        logger.info("Public key fingerprint is %s", public_key_fp)
+
+        return public_key_fp
+
+

@@ -1,0 +1,17 @@
+language: python
+python:
+- '3.4'
+install:
+  - deactivate
+  - sudo apt-get update
+  - which pip
+  - pip install pytest
+  - pip install .
+script:
+  - set -e
+  - ret=0
+  - timeout -s SIGUSR1 3600s py.test -vvv --cov=snowflake.ingest test || ret=$?
+  # TIMEOUT or SUCCESS
+  - if [ $ret != 124 -a $ret != 0 ]; then
+      exit 1;
+    fi
