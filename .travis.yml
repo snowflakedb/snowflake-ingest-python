@@ -4,9 +4,9 @@ python:
 before_install:
 - openssl aes-256-cbc -k "$super_secret_password" -in tests/parameters.py.enc -out tests/parameters.py -d
 install:
-- deactivate
 - sudo apt-get update
 - which pip
+- pip install pytest
 - pip install .
 script:
 - set -e
