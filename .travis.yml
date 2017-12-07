@@ -6,13 +6,10 @@ before_install:
 install:
 - sudo apt-get update
 - which pip
-- pip install pytest
+- pip install pytest, pytest-cov
 - pip install .
 script:
-- set -e
-- ret=0
-- timeout -s SIGUSR1 3600s py.test -vvv --cov=snowflake.ingest test || ret=$?
-- if [ $ret != 124 -a $ret != 0 ]; then exit 1; fi
+- pytest --cov=snowflake.ingest tests
 env:
   global:
     secure: a2wlAfdoM0eZe9x62H9bMb7F6apN4p346bAm4zgx1zT1T0432giSwkeT5ypmruXUaTwVGFWAm+Ix8IFRiC26wiUl/AQwzo0NxvO9HJAo5jAwZ38GgsSewHIES1X8azMJedEWV+wdYhWrfo0kQMSR4sEuog03DFJYd0DOtZ4kGovjsafxOMs1saNi0e0NX9O+msc+rT1vmAhudqkxhwOQhJfOkTe/X3C76ZmeV3wIMunKN6vpQyBOr/ril+FYgoVqJQ5lH/l54yCanoB5ZkFjGWWeLzelh4zj0shNhFGRbDfB8ng3UtE0tiErTFgHbX5dvPB5wIFnQhg2N4MqzruQA6mvxh5ks0wj+SkSdR8HSGsFZ2SqP38/VrF0i1iYxC6jyHSSc7hSm8i+ijxG8ctB2dPjd4wBFD24KWWx5B0yK+EpCg1s6xpz4kHi7mFi8IrrBjhT7IQYcQINgXjuOL52/RzFUni5X46o+NdOuGqRld4eHQPd181JrD2An1g3bcpRLlQUCuFk1avCwnlIgU9JSE4rDixaUOJtEvDdmD1Z+RQbAWyfuPghoJuWkPoqYrYGpcQ7rOei7QL6h0RbdiojMM1L9M9Eq7pCir8o1N5iUSgfEux38GnZmqlw4fP/6cLntxImSdx50RRMJLEzBW+z/c3CnvNyPqKLV+p2zRmayok=
