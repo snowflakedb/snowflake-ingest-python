@@ -6,7 +6,7 @@ before_install:
 install:
 - sudo apt-get update
 - which pip
-- pip install pytest, pytest-cov
+- pip install pytest pytest-cov
 - pip install .
 script:
 - pytest --cov=snowflake.ingest tests
