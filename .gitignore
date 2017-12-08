@@ -93,3 +93,6 @@ ENV/
 .spyderproject
 
 # Rope project settings
+
+tests/parameters.py
+*.xml

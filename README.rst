@@ -5,6 +5,15 @@ Snowflake Python Ingest Service SDK
 .. image:: http://img.shields.io/:license-Apache%202-brightgreen.svg
     :target: http://www.apache.org/licenses/LICENSE-2.0.txt
 
+.. image:: https://travis-ci.org/snowflakedb/snowflake-ingest-python.svg?branch=master
+    :target: https://travis-ci.org/snowflakedb/snowflake-ingest-python
+
+.. image:: https://codecov.io/gh/snowflakedb/snowflake-ingest-python/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/snowflakedb/snowflake-ingest-python
+
+.. image:: https://badge.fury.io/py/snowflake-ingest.svg
+    :target: https://pypi.python.org/pypi/snowflake-ingest
+
 The Snowflake Ingest Service SDK allows users to ingest files into their Snowflake data warehouse in a programmatic
 fashion via key-pair authentication.
 

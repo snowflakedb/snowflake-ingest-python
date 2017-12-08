@@ -27,3 +27,16 @@ class IngestResponseError(Exception):
 
     def __str__(self):
         return self.message
+
+
+class IngestClientError(Exception):
+    """
+        Error thrown in the client side
+    """
+    def __init__(self, **kwargs):
+        self.code = kwargs.get('code')
+        self.message = kwargs.get('message')
+
+    def __str__(self):
+        return 'Vendor Code: {}, Message: {}'\
+            .format(self.code, self.message)
