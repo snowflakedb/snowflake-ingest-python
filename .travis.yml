@@ -1,6 +1,8 @@
 language: python
 python:
 - '3.4'
+- '3.5'
+- '3.6'
 before_install:
 - openssl aes-256-cbc -k "$super_secret_password" -in tests/parameters.py.enc -out tests/parameters.py -d
 install:
