@@ -65,8 +65,7 @@ Here is a simple "hello world" example for using ingest sdk.
 
     # assume public key has been registered in Snowflake 
     # private key in pem format
-    private_key="""
-    -----BEGIN PRIVATE KEY-----
+    private_key="""-----BEGIN PRIVATE KEY-----
     abc...
     -----END PRIVATE KEY-----"""
     
@@ -102,7 +101,7 @@ Here is a simple "hello world" example for using ingest sdk.
             # wait for 20 seconds
             time.sleep(20)
 
-    // Valid ISO 8601 format requires Z at the end
+    # Valid ISO 8601 format requires Z at the end
     hour = timedelta(hours=1)
     date = datetime.datetime.utcnow() - hour
     history_range_resp = ingest_manager.get_history_range(date.isoformat() + 'Z')
