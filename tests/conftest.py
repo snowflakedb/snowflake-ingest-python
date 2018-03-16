@@ -46,17 +46,19 @@ class TestUtil:
         test_user = 'test_user_{}'.format(ctx_id)
         test_role = 'test_role_{}'.format(ctx_id)
         test_stage = 'test_stage_{}'.format(ctx_id)
-        test_table = 'test_table_{}'.format(ctx_id)
+        test_table = 'snowpipe_smoke_test_py'
         test_pipe = 'test_pipe_{}'.format(ctx_id)
 
-        cur.execute('use role accountadmin')
-        cur.execute('drop role if exists {}'.format(test_role))
-        cur.execute('drop user if exists {}'.format(test_user))
-        cur.execute('drop pipe if exists {}'.format(test_pipe))
+        cur.execute('use role {}'.format(test_role))
+        cur.execute('drop pipe {}'.format(test_pipe))
 
         cur.execute('use role testrole_snowpipe_python')
         cur.execute('drop stage if exists {}'.format(test_stage))
-        cur.execute('drop table if exists {}'.format(test_table))
+        cur.execute('truncate table {}'.format(test_table))
+
+        cur.execute('use role accountadmin')
+        cur.execute('drop role {}'.format(test_role))
+        cur.execute('drop user {}'.format(test_user))
 
 
 @pytest.fixture()
@@ -72,7 +74,10 @@ def ingest_ctx(request):
     test_user = 'test_user_{}'.format(ctx_id)
     test_role = 'test_role_{}'.format(ctx_id)
     test_stage = 'test_stage_{}'.format(ctx_id)
-    test_table = 'test_table_{}'.format(ctx_id)
+    #test_table = 'test_table_{}'.format(ctx_id)
+    # for now hard code the value for smoke test purpose,
+    # revisit this when we need to add more tests
+    test_table = 'snowpipe_smoke_test_py'
     test_pipe = 'test_pipe_{}'.format(ctx_id)
 
     private_key, public_key = TestUtil.generate_key_pair()
@@ -90,10 +95,11 @@ def ingest_ctx(request):
     cur.execute('alter user {} set rsa_public_key=\'{}\''.format(
         test_user, public_key))
     cur.execute('grant role {} to user {}'.format(test_role, test_user))
+    cur.execute('grant role {} to user TEST_SNOWPIPE_PYTHON'.format(test_role))
 
     cur.execute('use role testrole_snowpipe_python')
     cur.execute('create or replace stage {}'.format(test_stage))
-    cur.execute('create or replace table {}(cola number, colb string)'
+    cur.execute('create table if not exists {}(cola number, colb string)'
                 .format(test_table))
     cur.execute('create or replace pipe {} as copy into {} from @{}'
                 .format(test_pipe, test_table, test_stage))
