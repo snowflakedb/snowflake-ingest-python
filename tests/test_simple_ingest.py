@@ -3,25 +3,35 @@ from .parameters import CONNECTION_PARAMETERS
 from snowflake.ingest import StagedFile
 import time
 import os
+import snowflake.connector
+import pytest
 
 
-def test_simple_ingest(ingest_ctx, test_util):
-    ingest_user = 'TEST_USER_{}'.format(ingest_ctx['id'])
-    private_key = ingest_ctx['private_key']
-    pipe_name = '{}.{}.TEST_PIPE_{}'.format(CONNECTION_PARAMETERS['database'],
-                                            CONNECTION_PARAMETERS['schema'],
-                                            ingest_ctx['id'])
+def test_simple_ingest(connection_ctx, test_util):
+    pipe_name = '{}.{}.TEST_SIMPLE_INGEST_PIPE'.format(
+        CONNECTION_PARAMETERS['database'],
+        CONNECTION_PARAMETERS['schema'])
+
+    private_key = test_util.read_private_key()
+
+    print(private_key)
+
+    cur = connection_ctx['cnx'].cursor()
+
+    test_file = os.path.join(test_util.get_data_dir(), 'test_file.csv')
+    cur.execute('create or replace table TEST_SIMPLE_INGEST_TABLE(c1 number, c2 string)')
+    cur.execute('create or replace stage TEST_SIMPLE_INGEST_STAGE')
+    cur.execute('put file://{} @TEST_SIMPLE_INGEST_STAGE'.format(test_file))
+    cur.execute('create or replace pipe {0} as copy into TEST_SIMPLE_INGEST_TABLE '
+                'from @TEST_SIMPLE_INGEST_STAGE'.format(pipe_name))
 
     ingest_manager = SimpleIngestManager(account=CONNECTION_PARAMETERS['account'],
-                                         user=ingest_user,
+                                         user=CONNECTION_PARAMETERS['user'],
                                          private_key=private_key,
                                          pipe=pipe_name,
                                          scheme=CONNECTION_PARAMETERS['protocol'],
                                          host=CONNECTION_PARAMETERS['host'],
                                          port=CONNECTION_PARAMETERS['port'])
-
-    test_file = os.path.join(test_util.get_data_dir(), 'test_file.csv')
-    ingest_ctx['cnx'].cursor().execute('put file://{} @TEST_STAGE_{}'.format(test_file, ingest_ctx['id']))
 
     staged_files = [StagedFile('test_file.csv.gz', None)]
 
@@ -43,3 +53,17 @@ def test_simple_ingest(ingest_ctx, test_util):
 
     assert False
 
+
+@pytest.fixture()
+def connection_ctx(request):
+    cnx = snowflake.connector.connect(**CONNECTION_PARAMETERS)
+
+    def fin():
+        cnx.cursor().execute("drop table if exists TEST_SIMPLE_INGEST_TABLE")
+        cnx.cursor().execute("drop stage if exists TEST_SIMPLE_INGEST_STAGE")
+        cnx.cursor().execute("alter pipe TEST_SIMPLE_INGEST_PIPE set pipe_execution_paused=true")
+        cnx.cursor().execute("drop pipe if exists TEST_SIMPLE_INGEST_PIPE")
+        cnx.close()
+    request.addfinalizer(fin)
+
+    return {'cnx': cnx}
