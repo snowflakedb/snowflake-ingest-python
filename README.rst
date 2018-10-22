@@ -69,12 +69,15 @@ Here is a simple "hello world" example for using ingest sdk.
     abc...
     -----END PRIVATE KEY-----"""
     
-    # file lists that already in the stage that specified in pipe definition
+    # list of files in the stage specified in the pipe definition
     file_list=['a.csv', 'b.csv']
     ingest_manager = SimpleIngestManager(account='testaccount',
+                                         host='testaccount.snowflakecomputing.com',
                                          user='ingest_user',
                                          pipe='TESTDB.TESTSCHEMA.TESTPIPE',
                                          private_key=private_key)
+    
+    
     # list of files, but wrapped into a class  
     staged_file_list = []                               
     for file_name in file_list:
