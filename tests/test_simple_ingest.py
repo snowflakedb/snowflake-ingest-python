@@ -1,27 +1,36 @@
 from snowflake.ingest import SimpleIngestManager
-from .parameters import CONNECTION_PARAMETERS
 from snowflake.ingest import StagedFile
 import time
 import os
 
 
-def test_simple_ingest(ingest_ctx, test_util):
-    ingest_user = 'TEST_USER_{}'.format(ingest_ctx['id'])
-    private_key = ingest_ctx['private_key']
-    pipe_name = '{}.{}.TEST_PIPE_{}'.format(CONNECTION_PARAMETERS['database'],
-                                            CONNECTION_PARAMETERS['schema'],
-                                            ingest_ctx['id'])
+def test_simple_ingest(connection_ctx, test_util):
+    param = connection_ctx['param']
 
-    ingest_manager = SimpleIngestManager(account=CONNECTION_PARAMETERS['account'],
-                                         user=ingest_user,
-                                         private_key=private_key,
-                                         pipe=pipe_name,
-                                         scheme=CONNECTION_PARAMETERS['protocol'],
-                                         host=CONNECTION_PARAMETERS['host'],
-                                         port=CONNECTION_PARAMETERS['port'])
+    pipe_name = '{}.{}.TEST_SIMPLE_INGEST_PIPE'.format(
+        param['database'],
+        param['schema'])
+
+    private_key = test_util.read_private_key()
+
+    print(private_key)
+
+    cur = connection_ctx['cnx'].cursor()
 
     test_file = os.path.join(test_util.get_data_dir(), 'test_file.csv')
-    ingest_ctx['cnx'].cursor().execute('put file://{} @TEST_STAGE_{}'.format(test_file, ingest_ctx['id']))
+    cur.execute('create or replace table TEST_SIMPLE_INGEST_TABLE(c1 number, c2 string)')
+    cur.execute('create or replace stage TEST_SIMPLE_INGEST_STAGE')
+    cur.execute('put file://{} @TEST_SIMPLE_INGEST_STAGE'.format(test_file))
+    cur.execute('create or replace pipe {0} as copy into TEST_SIMPLE_INGEST_TABLE '
+                'from @TEST_SIMPLE_INGEST_STAGE'.format(pipe_name))
+
+    ingest_manager = SimpleIngestManager(account=param['account'],
+                                         user=param['user'],
+                                         private_key=private_key,
+                                         pipe=pipe_name,
+                                         scheme=param['protocol'],
+                                         host=param['host'],
+                                         port=param['port'])
 
     staged_files = [StagedFile('test_file.csv.gz', None)]
 
