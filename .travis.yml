@@ -7,10 +7,7 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_81a8c07869cf_key -iv $encrypted_81a8c07869cf_iv -in tests/parameters.py.enc -out tests/parameters.py -d
 
 install:
-- sudo apt-get update
-- which pip
-- pip install pytest pytest-cov
-- pip install .
+- ./scripts/travis_install.sh
 script:
 - pytest --cov-report xml --cov=snowflake.ingest tests
 after_success:
