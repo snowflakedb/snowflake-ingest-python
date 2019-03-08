@@ -55,7 +55,7 @@ class SimpleIngestManager(object):
     """
     SimpleIngestManager - this class is a simple wrapper around the Snowflake Ingest
     Service rest api. It is *synchronous* and as such we will block until we either totally fail to
-    get a response *or* we successfully hear back from the
+    get a response *or* we successfully hear back from the server.
     """
 
     def __init__(self, account: Text, user: Text, pipe: Text, private_key: Text,
