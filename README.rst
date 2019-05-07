@@ -30,7 +30,7 @@ A 2048-bit RSA key pair
 -----------------------
 Snowflake Authentication for the Ingest Service requires creating a 2048 bit
 RSA key pair and, registering the public key with Snowflake. For detailed instructions,
-please visit the relevant `Snowflake Documentation Page <docs.snowflake.net>`_.
+please visit the relevant `Snowflake Documentation Page <https://docs.snowflake.net>`_.
 
 
 Furl, PyJWT, Requests, and Cryptography
