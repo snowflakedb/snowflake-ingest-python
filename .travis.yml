@@ -3,6 +3,7 @@ python:
 - '3.4'
 - '3.5'
 - '3.6'
+- '3.7'
 before_install:
 - openssl aes-256-cbc -K $encrypted_81a8c07869cf_key -iv $encrypted_81a8c07869cf_iv -in tests/parameters.py.enc -out tests/parameters.py -d
 
