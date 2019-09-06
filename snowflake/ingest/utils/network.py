@@ -12,12 +12,12 @@ from ..error import IngestResponseError
 from logging import getLogger
 logger = getLogger(__name__)
 
+from typing import Dict, Any
 try:
-    from typing import Text, Dict, Any
+    from typing import Text
 except ImportError:
     logger.debug('# Python 3.5.0 and 3.5.1 have incompatible typing modules.', exc_info=True)
     from typing_extensions import Text
-    from typing import Dict, Any
 
 # default timeout in seconds for a rest request
 DEFAULT_REQUEST_TIMEOUT = 1 * 60
