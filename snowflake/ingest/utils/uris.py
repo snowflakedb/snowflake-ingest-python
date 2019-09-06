@@ -7,11 +7,16 @@ requests and history requests
 
 from uuid import uuid4, UUID
 from furl import furl
-from typing import Text
 from logging import getLogger
 
 # Create a logger for this module
 logger = getLogger(__name__)
+
+try:
+    from typing import Text
+except ImportError:
+    logger.debug('# Python 3.5.0 and 3.5.1 have incompatible typing modules.', exc_info=True)
+    from typing_extensions import Text
 
 # URI Construction constants we use for making a target URL
 DEFAULT_HOST_FMT = "{}.snowflakecomputing.com"  # by default we target the Snowflake US instance

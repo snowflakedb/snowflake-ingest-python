@@ -18,9 +18,6 @@ from .version import __version__
 # We use a named tuple to represent remote files
 from collections import namedtuple
 
-# Typing information
-from typing import Text, Dict, Any
-
 # UUID for typing formation
 from uuid import UUID
 
@@ -29,6 +26,13 @@ import platform
 
 from logging import getLogger
 logger = getLogger(__name__)
+
+try:
+    from typing import Text, Dict, Any
+except ImportError:
+    logger.debug('# Python 3.5.0 and 3.5.1 have incompatible typing modules.', exc_info=True)
+    from typing_extensions import Text
+    from typing import Dict, Any
 
 # We just need a simple named tuple to represent remote files
 StagedFile = namedtuple("StagedFile", ["path", "size"])

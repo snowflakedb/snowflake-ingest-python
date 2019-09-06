@@ -19,6 +19,10 @@ if version_info[0] < 3 or version_info[1] < 4:
 elif version_info[1] == 4:
     DEPENDS.append("typing")
 
+# Python 3.5.0 and 3.5.1 have incompatible typing modules. Use typing_extensions instead.
+elif version_info[1] == 5 and version_info[2] < 2:
+    DEPENDS.append("typing_extensions")
+
 here = os.path.abspath(os.path.dirname(__file__))
 
 def test_suite():

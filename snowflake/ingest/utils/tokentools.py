@@ -5,7 +5,6 @@ tokentools.py - provides services for automatically creating and renewing
 JWT tokens for authenticating to Snowflake
 """
 
-from typing import Text
 from datetime import timedelta, datetime
 from logging import getLogger
 from cryptography.exceptions import UnsupportedAlgorithm
@@ -21,6 +20,12 @@ import hashlib
 import jwt
 
 logger = getLogger(__name__)
+
+try:
+    from typing import Text
+except ImportError:
+    logger.debug('# Python 3.5.0 and 3.5.1 have incompatible typing modules.', exc_info=True)
+    from typing_extensions import Text
 
 ISSUER = "iss"
 EXPIRE_TIME = "exp"
