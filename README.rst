@@ -72,9 +72,6 @@ Here is a simple "hello world" example for using ingest sdk.
     import os
     import logging
 
-
-
-
     logging.basicConfig(
             filename='/tmp/ingest.log',
             level=logging.DEBUG)
@@ -98,7 +95,7 @@ Here is a simple "hello world" example for using ingest sdk.
                                              host='testaccount.snowflakecomputing.com',
                                              user='ingest_user',
                                              pipe='TESTDB.TESTSCHEMA.TESTPIPE',
-                                         private_key=private_key_text)
+                                             private_key=private_key_text)
     # List of files, but wrapped into a class
     staged_file_list = []
 
