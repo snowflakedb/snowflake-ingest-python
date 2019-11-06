@@ -45,6 +45,12 @@ class TestUtil:
 
     @staticmethod
     def read_private_key():
+        """
+        Add your own rsa private key(for testing only) in tests directory
+        Follow instructions here
+        https://docs.snowflake.net/manuals/user-guide/data-load-snowpipe-rest-gs.html#using-key-pair-authentication
+        :return: private key pem encoded
+        """
         tests_dir = os.path.dirname(os.path.realpath(__file__))
         private_key_filename = os.path.join(tests_dir, "sfctest0_private_key_1.p8")
 
@@ -70,9 +76,13 @@ def init_test_schema(request):
     This is automatically called per test session.
     """
     param = get_cnx_param()
+    TEST_DB = param['database']
     with snowflake.connector.connect(**param) as con:
+        con.cursor().execute("CREATE OR REPLACE DATABASE {0}".format(TEST_DB))
+        con.cursor().execute("USE DATABASE {0}".format(TEST_DB))
         con.cursor().execute(
             "CREATE SCHEMA IF NOT EXISTS {0}".format(TEST_SCHEMA))
+        con.cursor().execute("USE SCHEMA {0}".format(TEST_SCHEMA))
 
     def fin():
         param1 = get_cnx_param()
