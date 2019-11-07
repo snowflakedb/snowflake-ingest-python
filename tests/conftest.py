@@ -76,15 +76,14 @@ def init_test_schema(request):
     This is automatically called per test session.
     """
     param = get_cnx_param()
-    TEST_DB = param['database']
     with snowflake.connector.connect(**param) as con:
         # Uncomment below two lines to test it locally, travis user account
         # doesnt have permissions to create db and schema
         # con.cursor().execute("CREATE OR REPLACE DATABASE {0}".format(TEST_DB))
-        con.cursor().execute("USE DATABASE {0}".format(TEST_DB))
-        # con.cursor().execute(
-        #     "CREATE SCHEMA IF NOT EXISTS {0}".format(TEST_SCHEMA))
-        con.cursor().execute("USE SCHEMA {0}".format(TEST_SCHEMA))
+        # con.cursor().execute("USE DATABASE {0}".format(TEST_DB))
+        con.cursor().execute(
+            "CREATE SCHEMA IF NOT EXISTS {0}".format(TEST_SCHEMA))
+        # con.cursor().execute("USE SCHEMA {0}".format(TEST_SCHEMA))
 
     def fin():
         param1 = get_cnx_param()
