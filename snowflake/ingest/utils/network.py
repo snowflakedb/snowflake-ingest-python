@@ -1,3 +1,4 @@
+import snowflake.connector
 import requests
 from requests import Response
 import time
