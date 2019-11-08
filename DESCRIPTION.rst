@@ -8,6 +8,10 @@ Source code is also available at: https://github.com/snowflakedb/snowflake-inges
 Release Notes
 -------------------------------------------------------------------------------
 
+- v1.0.1 (November 08, 2019)
+
+      - Replaced Botocore's vendored requests with standalone requests
+
 - v1.0.0 (September 19, 2018)
 
       - Fix typing package issue in python 3.5.0 and 3.5.1
