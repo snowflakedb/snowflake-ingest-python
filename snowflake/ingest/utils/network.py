@@ -1,11 +1,6 @@
-# import to use ocsp module in python connector
-# this import will inject ocsp check method into
-# botocore.vendored.requests library
 import snowflake.connector
-
-# use requsts library bundled in botocore
-from botocore.vendored import requests
-from botocore.vendored.requests import Response
+import requests
+from requests import Response
 import time
 from ..error import IngestResponseError
 
