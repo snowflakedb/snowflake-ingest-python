@@ -1,4 +1,7 @@
+# This import is not used directly, but it has the effect of monkey-patching
+# the requests library to include an OCSP check.
 import snowflake.connector
+
 import requests
 from requests import Response
 import time
