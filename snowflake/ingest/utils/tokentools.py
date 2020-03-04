@@ -101,7 +101,7 @@ class SecurityManager(object):
 
             # Regenerate the actual token
             self.token = jwt.encode(payload, self.private_key, algorithm=SecurityManager.ALGORITHM)
-            logger.info("New Token is %s", self.token)
+            logger.info("New Token created")
 
         return self.token.decode('utf-8')
 
