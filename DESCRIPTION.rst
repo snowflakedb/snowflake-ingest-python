@@ -8,6 +8,10 @@ Source code is also available at: https://github.com/snowflakedb/snowflake-inges
 Release Notes
 -------------------------------------------------------------------------------
 
+- v1.0.2 (March 09, 2020)
+
+      - Stop logging JWT token
+
 - v1.0.1 (November 08, 2019)
 
       - Replaced Botocore's vendored requests with standalone requests
