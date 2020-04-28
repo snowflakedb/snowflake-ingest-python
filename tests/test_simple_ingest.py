@@ -13,8 +13,6 @@ def test_simple_ingest(connection_ctx, test_util):
 
     private_key = test_util.read_private_key()
 
-    print(private_key)
-
     cur = connection_ctx['cnx'].cursor()
 
     test_file = os.path.join(test_util.get_data_dir(), 'test_file.csv')
