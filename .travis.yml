@@ -8,7 +8,7 @@ before_install:
 install:
 - "./scripts/travis_install.sh"
 script:
-- pytest --cov-report xml --cov=snowflake.ingest tests
+- pytest --tb=native --cov-report xml --cov=snowflake.ingest tests
 after_success:
 - pip install codecov
 - codecov -f snowflake-ingest-python-coverage.xml -t 661d6c83-f010-4af1-bf7f-0df1ce3dbc8d
