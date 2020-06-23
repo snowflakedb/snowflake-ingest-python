@@ -10,3 +10,8 @@ python get-pip.py
 pip --version
 pip install -U pytest pytest-cov
 pip install .
+
+# white source
+echo ${PWD}
+chmod 755 ./scripts/run_whitesource.sh
+./scripts/run_whitesource.sh
