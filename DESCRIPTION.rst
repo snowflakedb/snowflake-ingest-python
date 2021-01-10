@@ -8,6 +8,10 @@ Source code is also available at: https://github.com/snowflakedb/snowflake-inges
 Release Notes
 -------------------------------------------------------------------------------
 
+- v1.0.3 (January 11, 2021)
+
+      - Use older version of pyJwt by pinning the version(<2.0.0)
+
 - v1.0.2 (March 09, 2020)
 
       - Stop logging JWT token
