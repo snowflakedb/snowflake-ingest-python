@@ -1,0 +1,53 @@
+name: Snowpipe Python SDK Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: '**'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ '3.6.12', '3.7.9', '3.8.7' ]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: 'x64'
+
+      - name: Display Python version
+        run: python -c "import sys; import os; print(\"\n\".join(os.environ[\"PATH\"].split(os.pathsep))); print(sys.version); print(sys.executable);"
+
+      - name: Decrypt profile.json
+        env:
+          DECRYPTION_PASSPHRASE: ${{ secrets.PARAMETERS_PY_DECRYPT_PASSPHRASE }}
+        run: |
+          ./scripts/decrypt_secret.sh
+
+      - name: Generate Pytest coverage report
+        run: |
+          pip install pytest
+          pip install pytest-cov
+          pip install .
+          pytest --cov=./ --cov-report=xml --tb=native tests
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          files: ./snowflake-ingest-python-coverage.xml
+          name: codecov-snowpipe-python-sdk
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: Run WhiteSource script
+        run: ./scripts/run_whitesource_gh.sh
+        env:
+          WHITESOURCE_API_KEY: ${{ secrets.WHITESOURCE_API_KEY }}
