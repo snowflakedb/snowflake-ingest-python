@@ -12,6 +12,8 @@ from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from cryptography.hazmat.primitives.serialization import Encoding
 from cryptography.hazmat.primitives.serialization import PublicFormat
 from cryptography.hazmat.backends import default_backend
+from snowflake.connector.util_text import parse_account
+
 from ..error import IngestClientError
 from ..errorcode import ERR_INVALID_PRIVATE_KEY
 import base64
@@ -57,7 +59,7 @@ class SecurityManager(object):
             account : %s, user : %s, lifetime : %s, renewal_delay : %s""",
             account, user, lifetime, renewal_delay)
 
-        self.account = account.upper()  # Snowflake account names are canonically in all caps
+        self.account = parse_account(account.upper())  # Snowflake account names are canonically in all caps
         self.user = user.upper()  # Snowflake user names are also in all caps by default
         self.qualified_username = self.account + "." + self.user  # Generate the full user name
         self.lifetime = lifetime  # the timedelta until our tokens expire
@@ -130,4 +132,5 @@ class SecurityManager(object):
 
         return public_key_fp
 
-
+    def get_account(self) -> Text:
+        return self.account
