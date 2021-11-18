@@ -1,6 +1,6 @@
 {
   "scanSettings": {
-    "configMode": "AUTO",
+    "configMode": "LOCAL",
     "configExternalURL": "",
     "projectToken": "",
     "baseBranches": []
@@ -11,5 +11,9 @@
   },
   "issueSettings": {
     "minSeverityLevel": "LOW"
+  },
+  "remediateSettings": {
+    "enableRenovate": false,
+    "commitMessagePrefix": "SNOW-506440"
   }
-}
+} 
