@@ -105,7 +105,11 @@ class SecurityManager(object):
             self.token = jwt.encode(payload, self.private_key, algorithm=SecurityManager.ALGORITHM)
             logger.info("New Token created")
 
-        return self.token.decode('utf-8')
+        if isinstance(self.token, bytes):
+            # This will be True for PyJWT<2.0.0, so we need to decode to str
+            return self.token.decode("utf-8")
+
+        return self.token
 
     def calculate_public_key_fingerprint(self, private_key: Text) -> Text:
         """
