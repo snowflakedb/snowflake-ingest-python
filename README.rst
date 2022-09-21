@@ -37,8 +37,8 @@ Furl, PyJWT, Requests, and Cryptography
 ---------------------------------------
 
 Internally, the Snowflake Ingest SDK makes use of `Furl <https://github.com/gruns/furl>`_, 
-`PyJWT <https://github.com/jpadilla/pyjwt>`_, and `Requests <http://docs.python-requests.org/en/master/>`_.
-In addition, the `cryptography <https://cryptography.io/en/latest/>`_ is used with PyJWT to sign JWT tokens.
+`PyJWT <https://github.com/jpadilla/pyjwt>`_, and `Requests <https://github.com/psf/requests>`_.
+In addition, the `cryptography <https://github.com/pyca/cryptography>`_ is used with PyJWT to sign JWT tokens.
 
 
 Installation
