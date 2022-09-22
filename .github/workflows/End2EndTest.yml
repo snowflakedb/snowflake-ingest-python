@@ -47,7 +47,3 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
-      - name: Run WhiteSource script
-        run: ./scripts/run_whitesource_gh.sh
-        env:
-          WHITESOURCE_API_KEY: ${{ secrets.WHITESOURCE_API_KEY }}
