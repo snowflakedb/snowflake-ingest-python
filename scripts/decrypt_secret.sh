@@ -4,4 +4,4 @@
 # --batch to prevent interactive command --yes to assume "yes" for questions
 
 gpg --quiet --batch --yes --decrypt --passphrase="$DECRYPTION_PASSPHRASE" \
-  --output ./scripts/parameters.py ./tests/parameters.py.gpg
+  --output ./tests/parameters.py ./scripts/parameters.py.gpg
