@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.6.12', '3.7.9', '3.8.7' ]
+        python-version: [ '3.7.9', '3.8.7' ]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
