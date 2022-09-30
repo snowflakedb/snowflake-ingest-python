@@ -37,6 +37,7 @@ jobs:
           pip install pytest
           pip install pytest-cov
           pip install .
+          pip install snowflake-connector-python
           pytest --cov=./ --cov-report=xml --tb=native tests
 
       - name: Upload coverage to Codecov
