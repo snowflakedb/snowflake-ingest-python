@@ -35,6 +35,7 @@ jobs:
       - name: Generate Pytest coverage report
         run: |
           pip install pytest
+          pip install wheel
           pip install pytest-cov
           pip install .
           pip install snowflake-connector-python
