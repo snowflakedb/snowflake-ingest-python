@@ -38,7 +38,8 @@ jobs:
           pip install pytest-cov
           pip install .
           pip install snowflake-connector-python
-          pytest --cov=./ --cov-report=xml --tb=native tests
+          python -m pytest --cov=./ --cov-report=xml --tb=native tests/
+#          pytest --cov=./ --cov-report=xml --tb=native tests
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
