@@ -4,7 +4,7 @@ import os
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
-import snowflake.connector as snowflake_connector_1
+from snowflake import connector
 import uuid
 from .parameters import CONNECTION_PARAMETERS
 from .parameters import PRIVATE_KEY_1_PASSPHRASE
@@ -76,7 +76,7 @@ def init_test_schema(request):
     This is automatically called per test session.
     """
     param = get_cnx_param()
-    with snowflake_connector_1.connect(**param) as con:
+    with snowflake.connector.connect(**param) as con:
         # Uncomment below two lines to test it locally, travis user account
         # doesnt have permissions to create db and schema
         # con.cursor().execute("CREATE OR REPLACE DATABASE {0}".format(TEST_DB))
@@ -87,7 +87,7 @@ def init_test_schema(request):
 
     def fin():
         param1 = get_cnx_param()
-        with snowflake_connector_1.connect(**param1) as con1:
+        with snowflake.connector.connect(**param1) as con1:
             con1.cursor().execute(
                 "DROP SCHEMA IF EXISTS {0}".format(TEST_SCHEMA))
     request.addfinalizer(fin)
@@ -101,7 +101,7 @@ def test_util():
 @pytest.fixture()
 def connection_ctx(request):
     param = get_cnx_param()
-    cnx = snowflake_connector_1.connect(**param)
+    cnx = snowflake.connector.connect(**param)
 
     def fin():
         cnx.close()
