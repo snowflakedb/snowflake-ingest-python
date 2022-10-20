@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ '3.6.12', '3.7.9', '3.8.7' ]
+        python-version: [ '3.7.9', '3.8.7' ]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -35,9 +35,12 @@ jobs:
       - name: Generate Pytest coverage report
         run: |
           pip install pytest
+          pip install wheel
           pip install pytest-cov
           pip install .
-          pytest --cov=./ --cov-report=xml --tb=native tests
+          pip install snowflake-connector-python
+          python -m pytest --cov=./ --cov-report=xml --tb=native tests/
+#          pytest --cov=./ --cov-report=xml --tb=native tests
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
@@ -47,7 +50,3 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
-      - name: Run WhiteSource script
-        run: ./scripts/run_whitesource_gh.sh
-        env:
-          WHITESOURCE_API_KEY: ${{ secrets.WHITESOURCE_API_KEY }}
