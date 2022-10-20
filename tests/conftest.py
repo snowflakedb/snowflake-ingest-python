@@ -4,7 +4,7 @@ import os
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
-from snowflake import connector
+import snowflake.connector
 import uuid
 from .parameters import CONNECTION_PARAMETERS
 from .parameters import PRIVATE_KEY_1_PASSPHRASE
