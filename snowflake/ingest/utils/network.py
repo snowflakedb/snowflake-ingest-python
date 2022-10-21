@@ -1,3 +1,4 @@
+# import python connector to inject ocsp check method into requests library
 import snowflake.connector
 import requests
 from requests import Response

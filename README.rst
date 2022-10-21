@@ -30,15 +30,15 @@ A 2048-bit RSA key pair
 -----------------------
 Snowflake Authentication for the Ingest Service requires creating a 2048 bit
 RSA key pair and, registering the public key with Snowflake. For detailed instructions,
-please visit the relevant `Snowflake Documentation Page <docs.snowflake.net>`_.
+please visit the relevant `Snowflake Documentation Page <https://docs.snowflake.com/en/user-guide/authentication.html>`_.
 
 
 Furl, PyJWT, Requests, and Cryptography
 ---------------------------------------
 
 Internally, the Snowflake Ingest SDK makes use of `Furl <https://github.com/gruns/furl>`_, 
-`PyJWT <https://github.com/jpadilla/pyjwt>`_, and `Requests <http://docs.python-requests.org/en/master/>`_.
-In addition, the `cryptography <https://cryptography.io/en/latest/>`_ is used with PyJWT to sign JWT tokens.
+`PyJWT <https://github.com/jpadilla/pyjwt>`_, and `Requests <https://github.com/psf/requests>`_.
+In addition, the `cryptography <https://github.com/pyca/cryptography>`_ is used with PyJWT to sign JWT tokens.
 
 
 Installation
