@@ -3,8 +3,12 @@
 # Upload snowflake-ingest-python Package to PyPI
 #
 # USAGE ./deploy.sh <pypi_username> <pypi_password>
+
+echo $WORKSPACE
+
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+echo $THIS_DIR
 function upload_package() {
     local target_pkg=ingest
 
@@ -13,10 +17,11 @@ function upload_package() {
     rm -rf $THIS_DIR/snowflake/${target_pkg}/build || true
     rm -f $THIS_DIR/dist/snowflake{_,-}${target_pkg}*.{whl,tar.gz} || true
 
-    python setup.py sdist bdist_wheel
+    python3 setup.py sdist bdist_wheel
 
-    WHL=$(ls $THIS_DIR/dist/snowflake_${target_pkg}*.whl)
-    TGZ=$(ls $THIS_DIR/dist/snowflake_${target_pkg}*.tar.gz)
+    
+    WHL=$(ls $WORKSPACE/dist/snowflake_${target_pkg}*.whl)
+    TGZ=$(ls $WORKSPACE/dist/snowflake_${target_pkg}*.tar.gz)
 
     VIRTUAL_ENV_DIR=$THIS_DIR/upload
     echo "****** $WHL ******"
@@ -45,28 +50,32 @@ function upload_package() {
     twine upload ${TWINE_OPTIONS[@]} -r pypi $TGZ
 }
 
-virtualenv-3.4 upload
-source upload/bin/activate
-pip install -U pip setuptools twine
+which python3
+python3 --version
+
+
+virtualenv -p python3 release
+
+source release/bin/activate
+pip3 install --upgrade pip
+pip3 install -U setuptools_rust setuptools twine 
 
 touch pypirc
-cat >pypirc<< PYPIRC
-[distutils] # this tells distutils what package indexes you can push to
+#!/bin/bash -ex
+export TERM=vt100
+
+cat >$WORKSPACE/pypirc <<PYPIRC
+[distutils]
 index-servers =
   pypi
-  pypitest
 
 [pypi]
-repository: https://upload.pypi.org/legacy/
-username: $1
-password: $2
-
-[pypitest]
-repository: https://test.pypi.org/legacy/
-username: $1 
-password: $2
+username:$pypi_user
+password:$pypi_password
 PYPIRC
-TWINE_CONFIG_FILE=$THIS_DIR/pypirc
+export CRYPTOGRAPHY_DONT_BUILD_RUST=1
+export TWINE_CONFIG_FILE=$WORKSPACE/pypirc
+
 
 upload_package
 deactivate
