@@ -8,6 +8,11 @@ Source code is also available at: https://github.com/snowflakedb/snowflake-inges
 Release Notes
 -------------------------------------------------------------------------------
 
+- v1.0.5 (November 04, 2022)
+
+      - Pin dependency package to newer versions (requests, snowflake-connector-python)
+      - Fix pyJwt logic to allow for version >= 2.0.0
+      
 - v1.0.4 (May 11, 2021)
 
       - Support a special account name style.
