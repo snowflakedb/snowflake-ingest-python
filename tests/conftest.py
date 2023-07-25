@@ -1,4 +1,4 @@
-#  Copyright (c) 2012-2017 Snowflake Computing Inc. All rights reserved.
+# Copyright (c) 2012-2023 Snowflake Computing Inc. All rights reserved.
 import pytest
 import os
 from cryptography.hazmat.backends import default_backend

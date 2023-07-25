@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2017 Snowflake Computing Inc. All rights reserved.
+# Copyright (c) 2012-2023 Snowflake Computing Inc. All rights reserved.
 from requests import Response
 
 class IngestResponseError(Exception):
