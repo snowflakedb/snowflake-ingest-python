@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2017 Snowflake Computing Inc. All rights reserved.
+# Copyright (c) 2012-2023 Snowflake Computing Inc. All rights reserved.
 
 """
 tokentools.py - provides services for automatically creating and renewing
