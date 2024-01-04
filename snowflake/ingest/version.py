@@ -1,3 +1,3 @@
-# Copyright (c) 2012-2023 Snowflake Computing Inc. All rights reserved.
+# Copyright (c) 2012-2024 Snowflake Computing Inc. All rights reserved.
 # Update this for the versions
-__version__ = '1.0.6'
+__version__ = '1.0.7'
