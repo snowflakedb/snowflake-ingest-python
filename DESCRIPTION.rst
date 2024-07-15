@@ -7,6 +7,9 @@ Source code is also available at: https://github.com/snowflakedb/snowflake-inges
 
 Release Notes
 -------------------------------------------------------------------------------
+- v1.0.8 (July 03, 2024)
+      - Update dependency package to newer version (requests)
+
 - v1.0.7 (January 05, 2024)
 
       - Pin dependency package to newer version (snowflake-connector-python)
