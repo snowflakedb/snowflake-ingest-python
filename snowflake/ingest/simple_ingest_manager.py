@@ -38,7 +38,7 @@ except ImportError:
 StagedFile = namedtuple("StagedFile", ["path", "size"])
 
 AUTH_HEADER = "Authorization"  # Authorization header name
-BEARER_FORMAT = "BEARER {0}"  # The format of this bearer
+BEARER_FORMAT = "Bearer {0}"  # The format of this bearer
 
 USER_AGENT_HEADER = "User-Agent" # User-Agent header name
 CLIENT_NAME = u"SnowpipePythonSDK" # Don't change!
