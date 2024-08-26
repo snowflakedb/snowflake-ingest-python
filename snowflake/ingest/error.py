@@ -26,8 +26,6 @@ class IngestResponseError(Exception):
             self.message = 'Http Error: {}, Message: {}, Body: {}'.format(self.http_error_code,
                                                                           response.reason,
                                                                           json_body)
-
-
         return
 
     def __str__(self):
