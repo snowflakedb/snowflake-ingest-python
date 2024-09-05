@@ -15,7 +15,7 @@ Snowflake Python Ingest Service SDK
     :target: https://pypi.python.org/pypi/snowflake-ingest
 
 The Snowflake Ingest Service SDK allows users to ingest files into their Snowflake data warehouse in a programmatic
-fashion via key-pair authentication.
+fashion via key-pair authentication. Note that this is for Snowpipe only and does not support Snowpipe Streaming.
 
 Prerequisites
 =============
