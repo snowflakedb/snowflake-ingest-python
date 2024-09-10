@@ -7,7 +7,7 @@ Source code is also available at: https://github.com/snowflakedb/snowflake-inges
 
 Release Notes
 -------------------------------------------------------------------------------
-- v1.0.9 (September 05, 2024)
+- v1.0.9 (September 10, 2024)
 
       - Fix casing for RFC-6750 conformity
       - Handle unexpected json structure in error payload
