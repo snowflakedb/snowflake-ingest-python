@@ -136,13 +136,15 @@ Artifact Validation
 =====
 Artifacts produced in this repository are signed by Snowflake and can be validated on the client side with the following steps.
 
-1. Install cosign following these instructions (https://edu.chainguard.dev/open-source/sigstore/cosign/how-to-install-cosign)
-2. Download the `.whl` from the repository like pypi (https://pypi.org/project/snowflake-ingest/#files)
-3. Download the `.crt` and `.sig` files for the version of artifact from the release page (https://github.com/snowflakedb/snowflake-ingest-python/releases/)
-4. Validate with cosign with the following command as an example
+1. Install cosign following `these instructions <https://edu.chainguard.dev/open-source/sigstore/cosign/how-to-install-cosign>`_.
+2. Download the `.whl` from the repository like `pypi <https://pypi.org/project/snowflake-ingest/#files>`_.
+3. Download the `.crt` and `.sig` files for the version of artifact from the `release page <https://github.com/snowflakedb/snowflake-ingest-python/releases>`_.
+4. Validate with cosign with the following command as an example. If valid, a message "Verified OK" should be printed out.
 
-cosign verify-blob snowflake_ingest-1.0.9-py3-none-any.whl  \
---certificate snowflake_ingest-1.0.9-py3-none-any.whl.crt \
---certificate-identity https://github.com/snowflakedb/snowflake-ingest-python/.github/workflows/publish-python.yaml@refs/tags/v1.0.9 \
---certificate-oidc-issuer https://token.actions.githubusercontent.com \
---signature snowflake_ingest-1.0.9-py3-none-any.whl.sig 
+.. code-block:: bash
+
+    cosign verify-blob snowflake_ingest-1.0.9-py3-none-any.whl  \
+      --certificate snowflake_ingest-1.0.9-py3-none-any.whl.crt \
+      --certificate-identity https://github.com/snowflakedb/snowflake-ingest-python/.github/workflows/publish-python.yaml@refs/tags/v1.0.9 \
+      --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+      --signature snowflake_ingest-1.0.9-py3-none-any.whl.sig 
