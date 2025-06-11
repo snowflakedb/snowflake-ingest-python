@@ -71,17 +71,30 @@ class SnowflakeRestful(object):
         retry_context = RetryCtx(DEFAULT_REQUEST_TIMEOUT)
 
         while True:
-            response = self._exec_request(url=url, method=method, headers=headers, json=json)
+            try:
+                response = self._exec_request(url=url, method=method, headers=headers, json=json)
 
-            if response.ok:
-                return response.json()
-            elif self._can_retry(response.status_code):
+                if response.ok:
+                    return response.json()
+                elif self._can_retry(response.status_code):
+                    next_sleep_time = retry_context.sleep_time()
+                    if next_sleep_time > 0:
+                        time.sleep(next_sleep_time)
+                        continue
+
+                raise IngestResponseError(response)
+
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Request exception occurred: {e}")
+                # Handle connection-level errors
                 next_sleep_time = retry_context.sleep_time()
                 if next_sleep_time > 0:
+                    logger.debug(f"Connection error, sleeping for {next_sleep_time} seconds before retry")
                     time.sleep(next_sleep_time)
                     continue
-
-            raise IngestResponseError(response)
+                else:
+                    logger.error("Maximum retry timeout reached, giving up")
+                    raise e
 
     def _exec_request(self, url: Text, method: Text, headers: Dict = None, json: Dict = None) -> Response:
         return requests.request(method=method,
