@@ -7,7 +7,7 @@ Source code is also available at: https://github.com/snowflakedb/snowflake-inges
 
 Release Notes
 -------------------------------------------------------------------------------
-- v1.0.11 (June 17, 2024)
+- v1.0.11 (June 17, 2025)
 
       - Better handling to retry connection errors
 
