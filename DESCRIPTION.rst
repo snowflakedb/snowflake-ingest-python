@@ -10,6 +10,7 @@ Release Notes
 - v1.0.11 (June 17, 2025)
 
       - Better handling to retry connection errors
+      - Pin dependency package to newer version (snowflake-connector-python)
 
 - v1.0.10 (November 14, 2024)
 
