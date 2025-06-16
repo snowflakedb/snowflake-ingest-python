@@ -10,7 +10,7 @@ import os
 from sys import version_info, exit
 # Define our list of installation dependencies
 DEPENDS = ["pyjwt",
-           "snowflake-connector-python>=3.15.0", 
+           "snowflake-connector-python>=3.12.0", 
            "furl",
            "cryptography",
            "requests<=2.32.3"]
