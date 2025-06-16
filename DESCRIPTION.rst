@@ -7,6 +7,10 @@ Source code is also available at: https://github.com/snowflakedb/snowflake-inges
 
 Release Notes
 -------------------------------------------------------------------------------
+- v1.0.10 (June 17, 2024)
+
+      - Better handling to retry connection errors
+
 - v1.0.10 (November 14, 2024)
 
       - Update readme for artifact validation using cosign
