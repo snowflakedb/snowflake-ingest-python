@@ -13,7 +13,7 @@ DEPENDS = ["pyjwt",
            "snowflake-connector-python>=3.12.0", 
            "furl",
            "cryptography",
-           "requests<=2.32.3"]
+           "requests<=2.32.4"]
 
 # If we're at version less than 3.4 - fail
 if version_info[0] < 3 or version_info[1] < 4:
