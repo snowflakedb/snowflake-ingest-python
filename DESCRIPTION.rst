@@ -7,6 +7,10 @@ Source code is also available at: https://github.com/snowflakedb/snowflake-inges
 
 Release Notes
 -------------------------------------------------------------------------------
+- v1.0.13 (June 17, 2026)
+
+      - Update dependency package to newer version (requests)
+
 - v1.0.12 (Oct 22, 2025)
 
       - Update dependency package to newer version (requests)
